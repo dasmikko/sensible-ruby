@@ -2,4 +2,4 @@
 
 require_relative "../lib/sensible"
 
-MyCliApp::CLI.start(ARGV)
+Sensible::CLI.start(ARGV)
