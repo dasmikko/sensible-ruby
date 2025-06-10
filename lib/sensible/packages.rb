@@ -16,10 +16,10 @@ module Sensible
             for package in packages do
                 isInstalled = checkPackage(package)
                 if isInstalled
-                    SensibleLog.success("#{package} is installed")
+                    SensibleLog.success("#{package} is installed", 2)
                 else
-                    SensibleLog.danger("#{package} is NOT installed")
-                    if prompt.yes?("Do you want to install #{package}")
+                    SensibleLog.danger("#{package} is NOT installed", 2)
+                    if SensibleLog.yes?("Do you want to install #{package}", 2)
                         installPackage(package)
                     end
                 end
