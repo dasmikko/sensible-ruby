@@ -1,19 +1,27 @@
 require_relative 'file'
+require_relative 'log'
+require 'tty-prompt'
+require 'pastel'
 
 module Sensible
     class SensiblePackages
         def self.checkPackages
             sensibleFile = SensibleFile.readSensibleFile
             packages = sensibleFile["packages"] 
-            
+            prompt = TTY::Prompt.new
+
             puts "Check the sensible.yml file dependencies"
+            pastel = Pastel.new
 
             for package in packages do
                 isInstalled = checkPackage(package)
                 if isInstalled
-                    puts "#{package} is installed"
+                    SensibleLog.success("#{package} is installed")
                 else
-                    puts "#{package} is NOT installed"
+                    SensibleLog.danger("#{package} is NOT installed")
+                    if prompt.yes?("Do you want to install #{package}")
+                        installPackage(package)
+                    end
                 end
             end
         end
