@@ -1,20 +1,29 @@
 require 'yaml'
 
 module Sensible
+    @sensibleFile = nil
+
     class SensibleFile
         def self.readSensibleFile
             currentDirname = File.basename(Dir.getwd)
-            pathToSensibleFile = "#{currentDirname}/sensible.yml"
-
-            puts pathToSensibleFile
+            pathToSensibleFile = "sensible.yml"
 
             unless File.exist?(pathToSensibleFile)
-                STDERR.puts "❌ Error: Required file not found: path/to/your/file.txt"
+                STDERR.puts "❌ Error: Required file not found: #{pathToSensibleFile}"
                 exit(1)
             end
 
-            data = YAML.load_file("#{currentDirname}/sensible.yml")
-            puts data
+            puts "Reading sensible file..."
+
+            @sensibleFile = YAML.load_file(pathToSensibleFile)
+        end
+
+        def self.data
+            @sensibleFile
+        end
+
+        def self.packages 
+            @sensibleFile['packages']
         end
     end
 end
