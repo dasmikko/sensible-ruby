@@ -10,7 +10,7 @@ module Sensible
             packages = sensibleFile["packages"] 
             prompt = TTY::Prompt.new
 
-            puts "Check the sensible.yml file dependencies"
+            puts "Checking installed packages..."
             pastel = Pastel.new
 
             for package in packages do
