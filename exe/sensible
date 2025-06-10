@@ -37,11 +37,11 @@ opts, args = ShellOpts::process(SPEC, ARGV)
 cmd = opts.subcommand
 cmd == :task! or args.expect(0) # Ensure no arguments except for task
 
-puts "Options"
-puts "  env: #{opts.env}"
-puts "  file: #{opts.file}"
-puts "  dir: #{opts.dir}"
-puts "Command: #{cmd.to_s.sub(/!$/, "")}"
+# puts "Options"
+# puts "  env: #{opts.env}"
+# puts "  file: #{opts.file}"
+# puts "  dir: #{opts.dir}"
+# puts "Command: #{cmd.to_s.sub(/!$/, "")}"
 
 case opts.subcommand
   when :check!

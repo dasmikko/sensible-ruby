@@ -13,17 +13,7 @@ module Sensible
                 exit(1)
             end
 
-            puts "Reading sensible file..."
-
-            @sensibleFile = YAML.load_file(pathToSensibleFile)
-        end
-
-        def self.data
-            @sensibleFile
-        end
-
-        def self.packages 
-            @sensibleFile['packages']
+            return YAML.load_file(pathToSensibleFile)
         end
     end
 end
