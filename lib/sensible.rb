@@ -1,35 +1,33 @@
-require "thor"
-require_relative "version"
-require_relative "commands/check"
+# frozen_string_literal: true
+
+require_relative "sensible/version"
+require_relative "sensible/check"
+require_relative "sensible/file"
+
+#require_relative "sensible/alle-andre-filer-under-lib/sensible-du-skal-bruge"
 
 module Sensible
-    class CLI < Thor
-        map %w[--version -v] => :version
+  class Error < StandardError; end
 
-        desc "hello NAME", "Say hello to NAME"
-        def hello(name)
-            puts "Hello, #{name}!"
-        end
+  def init
+    Sensible::SensibleFile.readSensibleFile
+  end
 
-        desc "command COMMAND", "Run a shell command"
-        def command(command)
-            result = system "#{command}"
-            puts "result: #{result}"
-        end
+  def self.check(env, file, dir)
+    puts "  checking"
+    Sensible::SensibleFile.readSensibleFile
+    Sensible::SensibleCheck.checkDependencies
+  end
 
-        desc "scripttest", "Runs a shell script"
-        def scripttest
-            puts "Running shell script!"
-            result = system "./shelltest.sh"
-            puts "result: #{result}"
-        end
+  def self.install(env, file, dir)
+    puts "  installing"
+  end
 
-        desc "check", "Checks dependencies"
-        subcommand "check", Sensible::Commands::Check
+  def self.init(env, file, dir)
+    puts "  initializing"
+  end
 
-        desc "version", "Shows version"
-        def version
-            puts VERSION
-        end
-    end
+  def self.task(env, file, dir, task)
+    puts "  executing #{task}"
+  end
 end

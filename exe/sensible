@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+SPEC = %(
+  @ A small tool to manage and deploy projects
+
+  Install and update systems much like ansible but using shell scripts. It uses
+  a sensible.yml configuration file to control the process
+
+  OPTIONS
+    -e,env,environment=ENV
+      Sets the environment (dev/prod/etc). Default 'dev'
+
+    -f,file=FILE
+      Path to sensible configuration file
+
+    -d,dir,directory=DIR
+      Path to sensible directory. Default '.sensible'
+
+  COMMANDS
+    check!
+      Check the project for missing dependencies
+
+    install!
+      Install missing dependencies and requirements
+
+    task! -- TASK
+      Execute task
+
+    init!
+      Create a new sensible configuration file
+)
+
+require_relative '../lib/sensible.rb'
+require 'shellopts'
+
+opts, args = ShellOpts::process(SPEC, ARGV)
+cmd = opts.subcommand
+cmd == :task! or args.expect(0) # Ensure no arguments except for task
+
+puts "Options"
+puts "  env: #{opts.env}"
+puts "  file: #{opts.file}"
+puts "  dir: #{opts.dir}"
+puts "Command: #{cmd.to_s.sub(/!$/, "")}"
+
+case opts.subcommand
+  when :check!
+    Sensible.check(opts.env, opts.file, opts.dir)
+  when :install!
+    Sensible.install(opts.env, opts.file, opts.dir)
+  when :task!
+    arg = args.expect(1) # Expect a single argument to sensible task
+    Sensible.task(opts.env, opts.file, opts.dir, arg)
+  when :init!
+    Sensible.init(opts.env, opts.file, opts.dir)
+end
+
