@@ -33,6 +33,10 @@ Gem::Specification.new do |spec|
   # spec.add_dependency "example-gem", "~> 1.0"
 
   spec.add_dependency "shellopts"
+  spec.add_dependency "tty-which"
+  spec.add_dependency "tty-command"
+  spec.add_dependency "pastel"
+  spec.add_dependency "tty-spinner"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
