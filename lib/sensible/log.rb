@@ -9,12 +9,27 @@ module Sensible
             puts message
         end
 
-        def self.success(message)
-            puts $pastel.green("✔") + " #{message}"
+        def self.success(message, indent = 0)
+            spaceIndent = ""
+            indent.times { |i| spaceIndent << " " }
+
+            puts "#{spaceIndent}#{$pastel.green("✔")} #{message}"
         end
 
-        def self.danger(message)
-            puts $pastel.red("✘") + " #{message}"
+        def self.danger(message, indent = 0)
+            spaceIndent = ""
+            indent.times { |i| spaceIndent << " " }
+
+            puts "#{spaceIndent}#{$pastel.red("✘")} #{message}"
+        end
+
+        def self.yes?(message, indent = 0)
+            prompt = TTY::Prompt.new
+
+            spaceIndent = ""
+            indent.times { |i| spaceIndent << " " }
+
+            prompt.yes?("#{spaceIndent}#{message}")
         end
 
     end
