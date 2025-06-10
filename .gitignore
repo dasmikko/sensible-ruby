@@ -17,3 +17,5 @@
 /Gemfile.lock
 
 # Put your personal ignore files in /home/clr/.config/git/ignore
+
+*.gem
