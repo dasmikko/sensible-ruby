@@ -1,4 +1,4 @@
 packages:
-  - httpd
-  - htop
-  - btop
+  - name: httpd
+  - name: htop
+  - name: btop

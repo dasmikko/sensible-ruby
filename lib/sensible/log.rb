@@ -4,7 +4,7 @@ require 'pastel'
 module Sensible
     $pastel = Pastel.new
 
-    class SensibleLog 
+    class Logger 
         def self.log(message)
             puts message
         end
@@ -14,6 +14,13 @@ module Sensible
             indent.times { |i| spaceIndent << " " }
 
             puts "#{spaceIndent}#{$pastel.green("✔")} #{message}"
+        end
+
+        def self.info(message, indent = 0)
+            spaceIndent = ""
+            indent.times { |i| spaceIndent << " " }
+
+            puts "#{spaceIndent}#{$pastel.blue("i")} #{message}"
         end
 
         def self.danger(message, indent = 0)
