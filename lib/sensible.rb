@@ -45,37 +45,23 @@ module Sensible
     def install
       Logger.log("Installing packages...")
 
-      installed_packages = []
-      failed_packages = []
+      # Prewarm sudo, to prevent asking too much
+      system('sudo -v')
 
       for pkg in @packages
         if pkg.do_check
-          installed_packages.append(pkg)
+          Logger.success("#{pkg.name} is installed", 2)
         else
-          Logger.info("Installing: #{pkg.name}")
-          was_installed = pkg.do_install
-
-          if was_installed
-            installed_packages.append(pkg)
+          Logger.info("Installing: #{pkg.name}\r", 2, use_print: true)
+          if pkg.do_install
+            Logger.success("#{pkg.name} was installed", 2)
+            $stdout.flush
           else
-            failed_packages.append(pkg)
+            Logger.danger("#{pkg.name} was not installed", 2)
+            $stdout.flush
           end
         end
       end  
-      
-      if installed_packages.length > 0
-        Logger.log("These packages was installed succesfully:")
-        for pkg in installed_packages
-          Logger.success("#{pkg.name}", 2)
-        end
-      end
-
-      if failed_packages.length > 0
-        Logger.log("These packages was installed unsuccesfully:")
-        for pkg in failed_packages
-          Logger.danger("#{pkg.name}", 2)
-        end
-      end
     end
 
     def self.init(env, file, dir)
