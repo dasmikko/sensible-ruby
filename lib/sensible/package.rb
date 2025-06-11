@@ -7,28 +7,44 @@ module Sensible
     attr_reader :sensible
     attr_reader :name
     attr_reader :check
+    attr_reader :install
 
     def initialize(packageHash, sensible)
       @name = packageHash['name']
+      @check = packageHash['check']
+      @install = packageHash['install']
+
       @sensible = sensible
     end
 
 
     # Check if the package is installed
     def do_check
-      result = `rpm -q #{@name}`
-      
-      if result.include? 'is not installed'
-        return false
+      if @check
+        result = `#{@check}`
+        return $?.success?
       else 
-        return true
-      end           
+        # If check is not set, then infer that it's a system package
+        result = `rpm -q #{@name}`
+      
+        if result.include? 'is not installed'
+          return false
+        else 
+          return true
+        end
+      end
+                 
     end
     
     # Install the package
     def do_install
-      system("sudo dnf install -y #{@name}")
-      return $?.success?
-    end
+      if @install 
+        system(@install, out: File::NULL)
+        return $?.success?        
+      else
+        system("sudo", "dnf", "install", "-y", @name, out: File::NULL, err: File::NULL)
+        return $?.success?
+      end
+    end   
   end
 end
