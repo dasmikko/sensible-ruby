@@ -2,3 +2,5 @@ packages:
   - name: httpd
   - name: htop
   - name: btop
+  - name: rvm
+    check: which rvm
