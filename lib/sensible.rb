@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-
+require 'yaml'
 require_relative "sensible/version"
 require_relative "sensible/package"
-require_relative "sensible/file"
 require_relative "sensible/log"
+require_relative "sensible/parse"
 
 module Sensible
   class Error < StandardError; end
@@ -15,26 +15,19 @@ module Sensible
 
 
     def initialize(sensibleFileName, opts)
-      unless File.exist?(sensibleFileName)
-          STDERR.puts "❌ Error: Required file not found: #{sensibleFileName}"
+      file_name = opts.file || sensibleFileName
+      unless File.exist?(file_name)
+          STDERR.puts "❌ Error: Required file not found: #{file_name}"
           exit(1)
       end
 
       # Load the Sensile file
-      sensibleFileData = YAML.load_file(sensibleFileName)
+      sensible_file_data = YAML.load_file(file_name)
 
       # Parse packages
-      @packages = parsePackages(sensibleFileData)
+      @packages = Parse.parse_sensible_packages(sensible_file_data['packages'])
     end
 
-
-    def parsePackages(sensibleFile)
-      list = []
-      for pkg in sensibleFile['packages']
-        list.append(Package.new(pkg, self))
-      end
-      return list
-    end
 
     # Run all the checks for packages and requirements
     def check

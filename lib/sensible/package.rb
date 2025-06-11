@@ -1,4 +1,3 @@
-require_relative 'file'
 require_relative 'log'
 require 'tty-prompt'
 require 'pastel'
