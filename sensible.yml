@@ -2,5 +2,7 @@ packages:
   - name: httpd
   - name: htop
   - name: btop
+    env: 
+      - prod
   - name: rvm
     check: which rvm
