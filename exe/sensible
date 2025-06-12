@@ -66,7 +66,6 @@ sensible = Sensible::Sensible.new("sensible.yml", opts, args)
 case opts.subcommand
   when :check!
     sensible.check
-    #Sensible.check(opts.env, opts.file, opts.dir)
   when :install!
     sensible.install
   when :task!
