@@ -76,8 +76,6 @@ case opts.subcommand
         arg = args.expect(1) # Expect a single argument to sensible task
         sensible.task_run(arg)
     end
-    
-    # TODO: Make task handling
   when :init!
     sensible.init
     # TODO: Make init handling
