@@ -8,11 +8,13 @@ module Sensible
     attr_reader :name
     attr_reader :check
     attr_reader :install
+    attr_reader :env
 
     def initialize(packageHash, sensible)
       @name = packageHash['name']
       @check = packageHash['check']
       @install = packageHash['install']
+      @env = packageHash['env'] || []
 
       @sensible = sensible
     end

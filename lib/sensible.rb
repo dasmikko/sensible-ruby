@@ -12,9 +12,12 @@ module Sensible
 
     attr_reader :packages
     attr_reader :requirements
+    attr_reader :opts
 
 
     def initialize(sensibleFileName, opts)
+      @opts = opts
+
       file_name = opts.file || sensibleFileName
       unless File.exist?(file_name)
           STDERR.puts "❌ Error: Required file not found: #{file_name}"
@@ -25,7 +28,7 @@ module Sensible
       sensible_file_data = YAML.load_file(file_name)
 
       # Parse packages
-      @packages = Parse.parse_sensible_packages(sensible_file_data['packages'])
+      @packages = Parse.parse_sensible_packages(sensible_file_data['packages'], self)
     end
 
 
@@ -34,6 +37,21 @@ module Sensible
       Logger.log("Checking for installed packages...")
       
       for pkg in @packages
+        # Do an environment test
+        if @opts.env
+          # If package env is not define, we expect it should always be installed regardless of environment
+          if pkg.env.length > 0 
+            # If user has defined an environment, skip if the set environment isn't in the package enviroment list
+            if not pkg.env.include? @opts.env
+              next
+            end
+          end
+           
+        else
+          # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
+          next if pkg.env.length > 0
+        end
+
         if pkg.do_check
           Logger.success("#{pkg.name} is installed", 2)
         else
