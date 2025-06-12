@@ -45,11 +45,10 @@ module Sensible
       tasks_path = "#{@sensible_folder}/#{tasks_folder}"
       task_files = Dir.children(tasks_path)
 
-      task_list = []
+      @tasks = []
       for task_file in task_files
-        task_list << Task.new(YAML.load_file("#{tasks_path}/#{task_file}"), task_file, self)
+        @tasks << Task.new(YAML.load_file("#{tasks_path}/#{task_file}"), task_file, self)
       end
-      @tasks = task_list
     end
 
 
@@ -117,10 +116,21 @@ module Sensible
     end
 
     def task_run(task_name)
-      puts "Running task: #{task_name}"
-
       task = @tasks.detect {|e| e.file_name == "#{task_name}.yml"}
-      task.do_install
+
+      # If task is not found, exit!
+      if task == nil
+         Logger.error("#{task_name}: Does not exist!")
+         exit(1)
+      end
+       puts "Running task: #{task_name}"
+      
+      # Check if we need to rerun the task
+      if !task.do_check
+        task.do_install
+      else
+        puts "Task check is already met"
+      end
     end
 
     def task_list
@@ -128,6 +138,7 @@ module Sensible
       pastel = Pastel.new
       for task in @tasks
         Logger.log("#{pastel.blue.bold(task.file_name)}: #{task.name}")
+        pp task
       end
     end
   end

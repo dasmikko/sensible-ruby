@@ -43,6 +43,19 @@ module Sensible
       end      
     end
 
+    def self.error(message, indent = 0, use_print: false)
+      spaceIndent = ""
+      indent.times { |i| spaceIndent << " " }
+
+      full_message = "#{spaceIndent}#{$pastel.on_red.black(" ERROR ")} #{message}"
+      
+      if use_print
+        print full_message
+      else      
+        puts full_message
+      end      
+    end
+
     def self.yes?(message, indent = 0)
       prompt = TTY::Prompt.new
 

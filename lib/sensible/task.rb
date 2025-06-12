@@ -14,11 +14,19 @@ module Sensible
     end
     
     def do_check
-      puts "To be implemented"
+      # If check is not set, always run the task
+      if @check == nil
+        return false
+      end
+
+      # If there is no check, default to false, to force task to install every time
+      system(@check, out: File::NULL)
+      return $?.success?
     end  
 
     def do_install
-      puts "To be implemented"
+      system(@install, out: File::NULL)
+      return $?.success?        
     end
   end
 end
