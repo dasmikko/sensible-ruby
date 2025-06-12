@@ -14,7 +14,6 @@ module Sensible
 
     attr_reader :packages
     attr_reader :requirements
-    attr_reader :tasks
     
     attr_reader :sensible_folder
     attr_reader :tasks_folder
@@ -40,15 +39,6 @@ module Sensible
       if sensible_file_data['packages'] 
         @packages = Parse.parse_sensible_packages(sensible_file_data['packages'], self)
       end
-
-      # Parse tasks
-      tasks_path = "#{@sensible_folder}/#{tasks_folder}"
-      task_files = Dir.children(tasks_path)
-
-      @tasks = []
-      for task_file in task_files
-        @tasks << Task.new(YAML.load_file("#{tasks_path}/#{task_file}"), task_file, self)
-      end
     end
 
 
@@ -68,9 +58,9 @@ module Sensible
         end
 
         if pkg.do_check
-          Logger.success("#{pkg.name} is installed", 2)
+          Logger.success("#{pkg.name} is installed")
         else
-          Logger.danger("#{pkg.name} was NOT installed", 2)
+          Logger.danger("#{pkg.name} was NOT installed")
         end
       end    
     end
@@ -84,7 +74,7 @@ module Sensible
       for pkg in @packages
         # Do an environment test
         if @opts.env
-          # If package env is not define, we expect it should always be installed regardless of environment
+          # If package env is not defined, we expect it should always be installed regardless of environment
           # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
           next if pkg.env.any? && !pkg.env.include?(@opts.env)
         else
@@ -93,14 +83,14 @@ module Sensible
         end
 
         if pkg.do_check
-          Logger.success("#{pkg.name} is installed", 2)
+          Logger.success("#{pkg.name} is installed")
         else
-          Logger.info("Installing: #{pkg.name}\r", 2, use_print: true)
+          Logger.info("Installing: #{pkg.name}\r", use_print: true)
           if pkg.do_install
-            Logger.success("#{pkg.name} was installed", 2)
+            Logger.success("#{pkg.name} was installed")
             $stdout.flush
           else
-            Logger.danger("#{pkg.name} was not installed", 2)
+            Logger.danger("#{pkg.name} was not installed")
             $stdout.flush
           end
         end
@@ -116,29 +106,48 @@ module Sensible
     end
 
     def task_run(task_name)
-      task = @tasks.detect {|e| e.file_name == "#{task_name}.yml"}
-
+      # Load and parse the task file
+      task_file_path = "#{@sensible_folder}/#{@tasks_folder}/#{task_name}.yml"
+      
       # If task is not found, exit!
-      if task == nil
-         Logger.error("#{task_name}: Does not exist!")
-         exit(1)
+      if not File.exist?(task_file_path)
+        pastel = Pastel.new
+        Logger.error("Task: #{pastel.bold(task_name)} does not exist!")
+        exit(1)
       end
-       puts "Running task: #{task_name}"
+
+      task = Task.new(YAML.load_file(task_file_path), "#{task_name}.yml", self)
+
+      pastel = Pastel.new
+      puts "Running task: #{pastel.bold(task_name)}"
       
       # Check if we need to rerun the task
       if !task.do_check
-        task.do_install
+        if !task.do_install
+          Logger.error("The tasked failed!")
+        else
+          Logger.success("The task ran succesfully!")
+        end
       else
         puts "Task check is already met"
       end
     end
 
     def task_list
+      # Parse tasks
+      tasks_path = "#{@sensible_folder}/#{@tasks_folder}"
+      task_files = Dir.children(tasks_path)
+
+      tasks = []
+      for task_file in task_files
+        tasks << Task.new(YAML.load_file("#{tasks_path}/#{task_file}"), task_file, self)
+      end
+
       puts "Here is available tasks inside #{@sensible_folder}/#{tasks_folder}" if @opts.verbose
+
       pastel = Pastel.new
-      for task in @tasks
+      for task in tasks
         Logger.log("#{pastel.blue.bold(task.file_name)}: #{task.name}")
-        pp task
       end
     end
   end
