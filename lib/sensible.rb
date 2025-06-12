@@ -94,11 +94,11 @@ module Sensible
       end  
     end
 
-    def self.init(env, file, dir)
+    def init
       puts "  initializing"
     end
 
-    def self.task(env, file, dir, task)
+    def task(env, file, dir, task)
       puts "  executing #{task}"
     end
   end

@@ -16,6 +16,9 @@ SPEC = %(
     -d,dir,directory=DIR
       Path to sensible directory. Default '.sensible'
 
+    -v,verbose
+      Verbose output
+
   COMMANDS
     check!
       Check the project for missing dependencies
@@ -49,12 +52,14 @@ opts, args = ShellOpts::process(SPEC, ARGV)
 cmd = opts.subcommand!
 #cmd == :task! or args.expect(0) # Ensure no arguments except for task
 
-puts "Options"
-puts "  env: #{opts.env}"
-puts "  file: #{opts.file}"
-puts "  dir: #{opts.dir}"
-puts "  args: #{args}"
-# puts "Command: #{cmd.to_s.sub(/!$/, "")}"
+if opts.verbose
+  puts "Options"
+  puts "  env: #{opts.env}"
+  puts "  file: #{opts.file}"
+  puts "  dir: #{opts.dir}"
+  puts "  args: #{args}"
+  # puts "Command: #{cmd.to_s.sub(/!$/, "")}"
+end
 
 sensible = Sensible::Sensible.new("sensible.yml", opts)
 
@@ -74,6 +79,7 @@ case opts.subcommand
     
     # TODO: Make task handling
   when :init!
+    sensible.init
     # TODO: Make init handling
 end
 
