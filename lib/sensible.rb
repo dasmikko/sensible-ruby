@@ -40,16 +40,11 @@ module Sensible
         # Do an environment test
         if @opts.env
           # If package env is not define, we expect it should always be installed regardless of environment
-          if pkg.env.length > 0 
-            # If user has defined an environment, skip if the set environment isn't in the package enviroment list
-            if not pkg.env.include? @opts.env
-              next
-            end
-          end
-           
+          # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+          next if pkg.env.any? && !pkg.env.include?(@opts.env)
         else
           # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-          next if pkg.env.length > 0
+          next if pkg.env.any?
         end
 
         if pkg.do_check
@@ -67,6 +62,16 @@ module Sensible
       system('sudo -v')
 
       for pkg in @packages
+        # Do an environment test
+        if @opts.env
+          # If package env is not define, we expect it should always be installed regardless of environment
+          # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+          next if pkg.env.any? && !pkg.env.include?(@opts.env)
+        else
+          # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
+          next if pkg.env.any?
+        end
+
         if pkg.do_check
           Logger.success("#{pkg.name} is installed", 2)
         else
