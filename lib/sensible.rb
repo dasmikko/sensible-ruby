@@ -12,6 +12,7 @@ module Sensible
 
     attr_reader :packages
     attr_reader :requirements
+    attr_reader :tasks
     attr_reader :opts
 
 
@@ -28,7 +29,13 @@ module Sensible
       sensible_file_data = YAML.load_file(file_name)
 
       # Parse packages
-      @packages = Parse.parse_sensible_packages(sensible_file_data['packages'], self)
+      if sensible_file_data['packages'] 
+        @packages = Parse.parse_sensible_packages(sensible_file_data['packages'], self)
+      end
+
+      if sensible_file_data['tasks'] 
+        @tasks = Parse.parse_sensible_tasks(sensible_file_data['tasks'], self)
+      end
     end
 
 
