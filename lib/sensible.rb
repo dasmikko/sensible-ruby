@@ -9,15 +9,23 @@ module Sensible
   class Error < StandardError; end
 
   class Sensible
+    attr_reader :opts
+    attr_reader :args
 
     attr_reader :packages
     attr_reader :requirements
     attr_reader :tasks
-    attr_reader :opts
+    
+    attr_reader :sensible_folder
+    attr_reader :tasks_folder
 
 
-    def initialize(sensibleFileName, opts)
+    def initialize(sensibleFileName, opts, args)
       @opts = opts
+      @args = args
+
+      @sensible_folder = '.sensible'
+      @tasks_folder = 'tasks'
 
       file_name = opts.file || sensibleFileName
       unless File.exist?(file_name)
@@ -33,9 +41,15 @@ module Sensible
         @packages = Parse.parse_sensible_packages(sensible_file_data['packages'], self)
       end
 
-      if sensible_file_data['tasks'] 
-        @tasks = Parse.parse_sensible_tasks(sensible_file_data['tasks'], self)
+      # Parse tasks
+      tasks_path = "#{@sensible_folder}/#{tasks_folder}"
+      task_files = Dir.children(tasks_path)
+
+      task_list = []
+      for task_file in task_files
+        task_list << Task.new(YAML.load_file("#{tasks_path}/#{task_file}"), task_file, self)
       end
+      @tasks = task_list
     end
 
 
@@ -100,6 +114,21 @@ module Sensible
 
     def task(env, file, dir, task)
       puts "  executing #{task}"
+    end
+
+    def task_run(task_name)
+      puts "Running task: #{task_name}"
+
+      task = @tasks.detect {|e| e.file_name == "#{task_name}.yml"}
+      task.do_install
+    end
+
+    def task_list
+      puts "Here is available tasks inside #{@sensible_folder}/#{tasks_folder}" if @opts.verbose
+      pastel = Pastel.new
+      for task in @tasks
+        Logger.log("#{pastel.blue.bold(task.file_name)}: #{task.name}")
+      end
     end
   end
 end

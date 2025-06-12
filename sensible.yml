@@ -6,3 +6,8 @@ packages:
       - prod
   - name: rvm
     check: which rvm
+
+requirement:
+  - name: Test requirement
+    check: which node
+    install: echo "install"

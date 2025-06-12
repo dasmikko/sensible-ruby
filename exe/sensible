@@ -61,7 +61,7 @@ if opts.verbose
   # puts "Command: #{cmd.to_s.sub(/!$/, "")}"
 end
 
-sensible = Sensible::Sensible.new("sensible.yml", opts)
+sensible = Sensible::Sensible.new("sensible.yml", opts, args)
 
 case opts.subcommand
   when :check!
@@ -71,10 +71,10 @@ case opts.subcommand
     sensible.install
   when :task!
     case cmd.subcommand
-      when :list!; puts "list tasks"
+      when :list!; sensible.task_list
       when :run!
         arg = args.expect(1) # Expect a single argument to sensible task
-        puts "run task"
+        sensible.task_run(arg)
     end
     
     # TODO: Make task handling
