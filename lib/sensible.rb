@@ -28,7 +28,7 @@ module Sensible
 
       file_name = opts.file || sensibleFileName
       unless File.exist?(file_name)
-          STDERR.puts "❌ Error: Required file not found: #{file_name}"
+          Logger.error("Required file not found: #{file_name}")
           exit(1)
       end
 
@@ -150,8 +150,29 @@ module Sensible
       end
     end
 
-    def init
-      puts "  initializing"
+    def self.init(opts)
+      sensible_file_name = "sensible.yml"
+
+      if opts.file
+        if opts.file.end_with?(".yml")
+          sensible_file_name = opts.file
+        else
+          sensible_file_name = opts.file + ".yml"
+        end
+      end
+
+      if not File.exist?(sensible_file_name)
+        File.open(sensible_file_name, "w") do |f| 
+          f.write(<<~EOF)
+            ---
+            packages:
+            requirements:
+          EOF
+        end
+        Logger.success("Created #{sensible_file_name}!")
+      else 
+        Logger.error("Cannot create #{sensible_file_name}, it already exists!")
+      end
     end
 
     def task(env, file, dir, task)

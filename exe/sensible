@@ -61,22 +61,24 @@ if opts.verbose
   # puts "Command: #{cmd.to_s.sub(/!$/, "")}"
 end
 
-sensible = Sensible::Sensible.new("sensible.yml", opts, args)
-
 case opts.subcommand
-  when :check!
-    sensible.check
-  when :install!
-    sensible.install
-  when :task!
-    case cmd.subcommand
-      when :list!; sensible.task_list
-      when :run!
-        arg = args.expect(1) # Expect a single argument to sensible task
-        sensible.task_run(arg)
-    end
   when :init!
-    sensible.init
-    # TODO: Make init handling
+    Sensible::Sensible.init(opts)
+  else
+    sensible = Sensible::Sensible.new("sensible.yml", opts, args)
+
+    case opts.subcommand
+      when :check!
+        sensible.check
+      when :install!
+        sensible.install
+      when :task!
+        case cmd.subcommand
+          when :list!; sensible.task_list
+          when :run!
+            arg = args.expect(1) # Expect a single argument to sensible task
+            sensible.task_run(arg)
+        end
+    end
 end
 
