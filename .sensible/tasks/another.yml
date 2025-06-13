@@ -4,4 +4,4 @@ description: This is a sample task, and this is its description
 install: |
   echo "This is a multi line script"
   echo "I should use a temp file to run"
-  notify-send "Ran from a seperate file!"
+  notify-send "This is the post task that ran!"

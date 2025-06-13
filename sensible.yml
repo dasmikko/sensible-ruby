@@ -1,3 +1,6 @@
+preTasks:
+  - test
+
 packages:
   - name: httpd
   - name: htop
@@ -16,3 +19,5 @@ requirements:
     check: exit 1
     install: exit 1
   
+postTasks:
+  - another
