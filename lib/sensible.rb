@@ -105,8 +105,6 @@ module Sensible
     end
 
     def install
-      
-
       # Prewarm sudo, to prevent asking too much
       system('sudo -v')
 
@@ -214,10 +212,6 @@ module Sensible
       else 
         Logger.error("Cannot create #{sensible_file_name}, it already exists!")
       end
-    end
-
-    def task(env, file, dir, task)
-      puts "  executing #{task}"
     end
 
     def task_run(task_name)
