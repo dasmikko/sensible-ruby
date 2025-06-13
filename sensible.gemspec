@@ -3,13 +3,13 @@
 require_relative "lib/sensible/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "sensible"
+  spec.name = "sensible-cli"
   spec.version = Sensible::VERSION
   spec.authors = ["Mikkel Jensen"]
   spec.email = ["dasmikko@gmail.com"]
 
-  spec.summary = "Gem sensible"
-  spec.description = "Gem sensible"
+  spec.summary = "A small tool to manage projects."
+  spec.description = "A small tool to manage projects, making shell scripts easier to manage, and faster to setup projects!"
   spec.homepage = "https://github.com/dasmikko/sensible-ruby"
   spec.required_ruby_version = ">= 3.1.0"
 
