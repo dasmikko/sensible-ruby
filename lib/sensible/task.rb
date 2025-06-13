@@ -30,12 +30,27 @@ module Sensible
       # TODO: Handle the show output property!
 
       if @install.include?("\n")
-        puts "Is multi line install script, use a temp .sh file!"
-        # TODO: Make a temporaty file in /tmp/sensible that contains the script, and run it, to make sure things run smoothly!
-      end
+        temp_path = "/tmp/sensible"
+        temp_file_name = "install.sh"
+        temp_file_path = "#{temp_path}/#{temp_file_name}"
 
-      system(@install, out: File::NULL)
-      return $?.success?        
+        # Make sure we have the tmp folder created
+        FileUtils.mkdir_p(temp_path)
+
+        File.open(temp_file_path, "w") do |f| 
+          f.puts "#!/usr/bin/env bash\n\n"
+          f.write(@install)
+        end
+
+        # Make it executable
+        File.chmod(0700, temp_file_path)
+
+        result = system("#{temp_file_path}", out: File::NULL)
+        return $?.success?  
+      else
+        system(@install, out: File::NULL)
+        return $?.success?        
+      end
     end
 
     def do_verify
