@@ -32,6 +32,9 @@ SPEC = %(
     task.run! -- TASK
       Run a single task
 
+    task.create! -- TASK
+      Create a task
+
     init!
       Create a new sensible configuration file
 )
@@ -78,6 +81,9 @@ case opts.subcommand
           when :run!
             arg = args.expect(1) # Expect a single argument to sensible task
             sensible.task_run(arg)
+          when :create!
+            arg = args.expect(1) # Expect a single argument to sensible task
+            sensible.task_create(arg)
         end
     end
 end

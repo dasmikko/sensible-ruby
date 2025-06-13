@@ -224,5 +224,30 @@ module Sensible
         Logger.log("#{pastel.blue.bold(task.file_name)}: #{task.name}")
       end
     end
+
+    def task_create(task_name)
+      tasks_path = "#{@sensible_folder}/#{@tasks_folder}"
+      task_file_path = "#{tasks_path}/#{task_name}.yml"
+      
+      # Make sure the task don't already exist
+      if File.exist?(task_file_path)
+        pastel = Pastel.new
+        Logger.error("Task: #{pastel.bold(task_name)} already exist!")
+        exit(1)
+      end
+      
+      # Create the task yaml file
+      File.open(task_file_path, "w") do |f| 
+        f.write(<<~EOF)
+          ---
+          name:
+          description:
+          install:
+        EOF
+      end
+
+      pastel = Pastel.new
+      Logger.success("Created the task: #{pastel.bold("#{task_name}.yml")}")  
+    end
   end
 end
