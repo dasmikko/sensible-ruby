@@ -45,7 +45,7 @@ module Sensible
         # Make it executable
         File.chmod(0700, temp_file_path)
 
-        result = system("#{temp_file_path}", out: File::NULL)
+        system("#{temp_file_path}", out: File::NULL)
         return $?.success?  
       else
         system(@install, out: File::NULL)
