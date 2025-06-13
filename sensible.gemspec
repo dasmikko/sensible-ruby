@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "Gem sensible"
   spec.description = "Gem sensible"
-  spec.homepage = "http://www.nowhere.com/"
+  spec.homepage = "https://github.com/dasmikko/sensible-ruby"
   spec.required_ruby_version = ">= 3.1.0"
 
 
