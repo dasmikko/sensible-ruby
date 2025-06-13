@@ -5,7 +5,7 @@ require_relative "lib/sensible/version"
 Gem::Specification.new do |spec|
   spec.name = "sensible"
   spec.version = Sensible::VERSION
-  spec.authors = ["Mikkel Holm Jensen"]
+  spec.authors = ["Mikkel Jensen"]
   spec.email = ["dasmikko@gmail.com"]
 
   spec.summary = "Gem sensible"
