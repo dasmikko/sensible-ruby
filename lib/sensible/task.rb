@@ -14,6 +14,8 @@ module Sensible
     end
     
     def do_check
+      do_verify()
+
       # If check is not set, always run the task
       if @check == nil
         return false
@@ -25,8 +27,26 @@ module Sensible
     end  
 
     def do_install
+      # TODO: Handle the show output property!
+
+      if @install.include?("\n")
+        puts "Is multi line install script, use a temp .sh file!"
+        # TODO: Make a temporaty file in /tmp/sensible that contains the script, and run it, to make sure things run smoothly!
+      end
+
       system(@install, out: File::NULL)
       return $?.success?        
+    end
+
+    def do_verify
+      if !@install
+        pastel = Pastel.new
+        Logger.error("This is not valid task, #{pastel.bold("install")} property is missing!")
+        exit(1)
+        return false
+      end
+
+      return true
     end
   end
 end
