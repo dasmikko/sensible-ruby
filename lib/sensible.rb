@@ -39,6 +39,11 @@ module Sensible
       if sensible_file_data['packages'] 
         @packages = Parse.parse_sensible_packages(sensible_file_data['packages'], self)
       end
+
+      # Parse packages
+      if sensible_file_data['requirements'] 
+        @requirements = Parse.parse_sensible_requirements(sensible_file_data['requirements'], self)
+      end
     end
 
 
@@ -63,6 +68,28 @@ module Sensible
           Logger.danger("#{pkg.name} was NOT installed")
         end
       end    
+      
+      if @requirements != nil
+        Logger.log("\nChecking if requirements are met...")
+
+        for requirement in @requirements
+          # Do an environment test
+          if @opts.env
+            # If package env is not define, we expect it should always be installed regardless of environment
+            # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+            next if requirement.env.any? && !requirement.env.include?(@opts.env)
+          else
+            # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
+            next if pkg.env.any?
+          end
+
+          if requirement.do_check
+            Logger.success("#{requirement.name}")
+          else
+            Logger.danger("#{requirement.name}")
+          end
+        end
+      end
     end
 
     def install
@@ -119,7 +146,7 @@ module Sensible
       task = Task.new(YAML.load_file(task_file_path), "#{task_name}.yml", self)
 
       pastel = Pastel.new
-      puts "Running task: #{pastel.bold(task_name)}"
+      Logger.info("Running task: #{pastel.bold(task_name)}")
       
       # Check if we need to rerun the task
       if !task.do_check

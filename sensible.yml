@@ -7,7 +7,12 @@ packages:
   - name: rvm
     check: which rvm
 
-requirement:
+requirements:
   - name: Test requirement
     check: which node
     install: echo "install"
+  
+  - name: Test requirement that fails
+    check: exit 1
+    install: echo "install"
+  
