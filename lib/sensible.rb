@@ -48,12 +48,10 @@ module Sensible
       end
 
       if (sensible_file_data['preTasks'])
-        pp sensible_file_data['preTasks']
         @preTasks = sensible_file_data['preTasks']
       end
 
       if (sensible_file_data['postTasks'])
-        pp sensible_file_data['postTasks']
         @postTasks = sensible_file_data['postTasks']
       end
     end
