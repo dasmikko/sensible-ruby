@@ -122,6 +122,32 @@ module Sensible
           end
         end
       end  
+
+      Logger.log("\nHandling requirements...")
+      for requirement in @requirements
+        # Do an environment test
+        if @opts.env
+          # If package env is not defined, we expect it should always be installed regardless of environment
+          # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+          next if requirement.env.any? && !requirement.env.include?(@opts.env)
+        else
+          # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
+          next if requirement.env.any?
+        end
+
+        if requirement.do_check
+          Logger.success("#{requirement.name}")
+        else
+          Logger.info("Handling: #{pkg.name}\r", use_print: true)
+          if requirement.do_install
+            Logger.success("#{requirement.name}")
+            $stdout.flush
+          else
+            Logger.danger("#{requirement.name}")
+            $stdout.flush
+          end
+        end
+      end
     end
 
     def init

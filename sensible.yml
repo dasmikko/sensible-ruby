@@ -14,5 +14,5 @@ requirements:
   
   - name: Test requirement that fails
     check: exit 1
-    install: echo "install"
+    install: exit 1
   
