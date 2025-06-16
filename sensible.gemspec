@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
 
-  spec.add_dependency "shellopts"
+  spec.add_dependency "shellopts", ">= 2.6.1", "< 3"
   spec.add_dependency "tty-which"
   spec.add_dependency "tty-command"
   spec.add_dependency "pastel"
