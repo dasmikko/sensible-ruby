@@ -208,3 +208,9 @@ An example of a command that sets the environment to `prod`:
 sensible check --env prod # Check the project for missing dependencies in the prod environment
 sensible install --env stage # Install missing dependencies and requirements in the staging environment
 ```
+
+
+# Todo
+[ ] Add --host support, to run it agains another machine using ssh
+[ ] Variables for tasks
+[ ] Include other tasks?
