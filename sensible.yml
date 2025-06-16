@@ -3,12 +3,19 @@ preTasks:
 
 packages:
   - name: httpd
+    install: sudo dnf install -y httpd
+  
   - name: htop
+    install: sudo dnf install -y htop
+  
   - name: btop
+    install: sudo dnf install -y btop
     env: 
       - prod
+  
   - name: rvm
     check: which rvm
+    install: echo "sure"
 
 requirements:
   - name: Test requirement

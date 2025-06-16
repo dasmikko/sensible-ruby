@@ -22,6 +22,8 @@ module Sensible
 
     # Check if the package is installed
     def do_check
+      do_verify()
+
       if @check
         result = `#{@check}`
         return $?.success?
@@ -40,13 +42,19 @@ module Sensible
     
     # Install the package
     def do_install
-      if @install 
-        system(@install, out: File::NULL)
-        return $?.success?        
-      else
-        system("sudo", "dnf", "install", "-y", @name, out: File::NULL, err: File::NULL)
-        return $?.success?
+      system(@install, out: File::NULL)
+      return $?.success?   
+    end 
+    
+    def do_verify
+      if !@install
+        pastel = Pastel.new
+        Logger.error("This is not valid package, #{pastel.bold("install")} property is missing!")
+        exit(1)
+        return false
       end
-    end   
+
+      return true
+    end
   end
 end
