@@ -1,13 +1,22 @@
 require_relative 'package'
 
 module Sensible
-  class Task < Package
+  class Task
+    attr_reader :sensible
+    attr_reader :name
+    attr_reader :check
+    attr_reader :install
+    attr_reader :env
     attr_reader :file_name
     attr_reader :description
     attr_accessor :show_output
 
     def initialize(taskHash, file_name, sensible)
       super(taskHash, sensible)
+      @name = packageHash['name']
+      @check = packageHash['check']
+      @install = packageHash['install']
+      @env = packageHash['env'] || []
       @file_name = file_name
       @description = taskHash['description']
       @show_output = taskHash['showOutput']

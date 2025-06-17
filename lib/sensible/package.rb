@@ -19,42 +19,43 @@ module Sensible
       @sensible = sensible
     end
 
-
     # Check if the package is installed
     def do_check
-      do_verify()
-
       if @check
         result = `#{@check}`
         return $?.success?
       else 
-        # If check is not set, then infer that it's a system package
-        result = `rpm -q #{@name}`
-      
-        if result.include? 'is not installed'
-          return false
-        else 
-          return true
+        if sensible.package_check_command == nil
+          Logger.error('No check property, and there is no global check command set.')
+          exit(1)
         end
-      end
-                 
+
+        check_command = "#{sensible.package_check_command}"
+        check_command.sub!("$0", @name)
+      
+        system(install_command, out: File::NULL)
+        return $?.success?   
+      end         
     end
     
     # Install the package
     def do_install
-      system(@install, out: File::NULL)
+      install_command = ""
+
+      if @install == nil 
+        install_command = "#{sensible.package_install_command}"
+        install_command.sub!("$0", @name)
+      else 
+        if sensible.package_install_command == nil
+          Logger.error('No install property, and there is no install check command set.')
+          exit(1)
+        end
+
+        install_command = @install
+      end 
+
+      system(install_command, out: File::NULL)
       return $?.success?   
     end 
-    
-    def do_verify
-      if !@install
-        pastel = Pastel.new
-        Logger.error("This is not valid package, #{pastel.bold("install")} property is missing!")
-        exit(1)
-        return false
-      end
-
-      return true
-    end
   end
 end

@@ -1,30 +1,8 @@
-preTasks:
-  - test
+requirements: 
+  - httpd
+  - psql
 
-packages:
-  - name: httpd
-    install: sudo dnf install -y httpd
-  
-  - name: htop
-    install: sudo dnf install -y htop
-  
-  - name: btop
-    install: sudo dnf install -y btop
-    env: 
-      - prod
-  
-  - name: rvm
-    check: which rvm
-    install: echo "sure"
-
-requirements:
-  - name: Test requirement
-    check: which node
-    install: echo "install"
-  
-  - name: Test requirement that fails
-    check: exit 1
-    install: exit 1
-  
-postTasks:
-  - another
+options: 
+  # Possible future options
+  package_install_command: sudo dnf install -y $0 # Global command for package installation
+  package_check_command: rpm -q -y $0 # Global check command for packages

@@ -5,7 +5,7 @@ require_relative 'package'
 module Sensible
   class Parse
     
-    # Parse the package list from sensible.yml
+    # Parse the package list
     def self.parse_sensible_packages(sensible_hash_list, sensible)
       list = []
       for pkg in sensible_hash_list
