@@ -45,15 +45,6 @@ SPEC = %(
 require_relative '../lib/sensible.rb'
 require 'shellopts'
 
-# Monkey patch where version_number is not fetched correctly in ruby 3.4.2
-module ShellOpts
-  class ShellOpts
-    def version_number
-      Sensible::VERSION
-    end
-  end
-end
-
 opts, args = ShellOpts::process(SPEC, ARGV)
 cmd = opts.subcommand!
 #cmd == :task! or args.expect(0) # Ensure no arguments except for task
