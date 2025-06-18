@@ -1,8 +1,7 @@
 requirements: 
   - httpd
-  - psql
 
 options: 
   # Possible future options
   package_install_command: sudo dnf install -y $0 # Global command for package installation
-  package_check_command: rpm -q -y $0 # Global check command for packages
+  package_check_command: rpm -q $0 # Global check command for packages

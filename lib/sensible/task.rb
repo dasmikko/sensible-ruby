@@ -12,7 +12,6 @@ module Sensible
     attr_accessor :show_output
 
     def initialize(taskHash, file_name, sensible)
-      super(taskHash, sensible)
       @name = packageHash['name']
       @check = packageHash['check']
       @install = packageHash['install']

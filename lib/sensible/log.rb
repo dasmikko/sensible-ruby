@@ -7,7 +7,14 @@ module Sensible
 
   class Logger 
     def self.log(message, indent = 0, use_print: false)
-        puts message
+      spaceIndent = ""
+      indent.times { |i| spaceIndent << " " }
+
+      if use_print
+        print "#{spaceIndent}#{message}"
+      else      
+        puts "#{spaceIndent}#{message}"
+      end
     end
 
     def self.success(message, indent = 0, use_print: false)

@@ -33,7 +33,7 @@ module Sensible
         check_command = "#{sensible.package_check_command}"
         check_command.sub!("$0", @name)
       
-        system(install_command, out: File::NULL)
+        system(check_command, out: File::NULL, err: File::NULL)
         return $?.success?   
       end         
     end
@@ -54,7 +54,7 @@ module Sensible
         install_command = @install
       end 
 
-      system(install_command, out: File::NULL)
+      system(install_command, out: '/dev/null', err: File::NULL)
       return $?.success?   
     end 
   end

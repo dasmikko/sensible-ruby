@@ -5,6 +5,7 @@ packages:
   - name: httpd
     check: rpm -q httpd # If omitted, it used the one from sensible.yml
     install: sudo dnf install -y httpd # If omitted, it used the one from sensible.yml
+  - name: btop
 check: |
   # This is for a more complex check, like if you need to check a service is running, files exist, etc... 
 install: |

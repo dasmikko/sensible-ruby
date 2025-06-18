@@ -40,149 +40,139 @@ module Sensible
       # Load the Sensile file
       sensible_file_data = YAML.load_file(file_name)
 
-      if sensible_file_data['package_install_command'] 
-        @package_install_command = sensible_file_data['package_install_command'] 
-      end
+      # Parse options
+      if sensible_file_data['options']
+        options = sensible_file_data['options']
+        if options['package_install_command'] 
+          @package_install_command = options['package_install_command'] 
+        end
 
-      if sensible_file_data['package_check_command'] 
-        @package_check_command = sensible_file_data['package_check_command'] 
+        if options['package_check_command'] 
+          @package_check_command = options['package_check_command'] 
+        end
       end
-      
+        
       # Parse packages
       if sensible_file_data['requirements'] 
         @requirements = Parse.parse_sensible_requirements(sensible_file_data['requirements'], self)
       end
+     
     end
 
 
     # Run all the checks for packages and requirements
     def check
-      Logger.log("Checking for installed packages...")
       
-      for pkg in @packages
-        # Do an environment test
-        if @opts.env
-          # If package env is not define, we expect it should always be installed regardless of environment
-          # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
-          next if pkg.env.any? && !pkg.env.include?(@opts.env)
-        else
-          # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-          next if pkg.env.any?
-        end
-
-        if pkg.do_check
-          Logger.success("#{pkg.name} is installed")
-        else
-          Logger.danger("#{pkg.name} was NOT installed")
-        end
-      end    
       
-      if @requirements != nil
-        Logger.log("\nChecking if requirements are met...")
 
-        for requirement in @requirements
-          # Do an environment test
+      for requirement in @requirements
+        pastel = Pastel.new
+        Logger.log("#{pastel.bold(requirement.name)}")
+
+        if requirement.packages
+           # Do an environment test
           if @opts.env
-            # If package env is not define, we expect it should always be installed regardless of environment
+            # If requirement env is not define, we expect it should always be installed regardless of environment
             # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
             next if requirement.env.any? && !requirement.env.include?(@opts.env)
-          else
-            # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-            next if pkg.env.any?
           end
 
+          Logger.log("Checking for installed packages...",)
+          
+          for pkg in requirement.packages
+            if @opts.env
+              # If package env is not define, we expect it should always be installed regardless of environment
+              # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+              next if pkg.env.any? && !pkg.env.include?(@opts.env)
+            else
+              # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
+              next if pkg.env.any?
+            end
+
+            if pkg.do_check
+              Logger.success("#{pkg.name} is installed")
+            else
+              Logger.danger("#{pkg.name} was NOT installed")
+            end
+          end
+        end
+
+        if requirement.check != nil
+          Logger.log("\nChecking if requirement is met...")
+
           if requirement.do_check
-            Logger.success("#{requirement.name}")
+            Logger.success("Requirement is met")
           else
-            Logger.danger("#{requirement.name}")
+            Logger.danger("Requirement is NOT met")
           end
         end
       end
+      
+      
     end
 
     def install
       # Prewarm sudo, to prevent asking too much
       system('sudo -v')
 
-      # Run pre tasks
-      if @preTasks != nil
-        Logger.log("Running pre tasks...")
-
-        for task in @preTasks
-          task_run(task)
-        end
-        Logger.log("")
-      end
-      
-      # Install packages
-      if @packages != nil
-        Logger.log("Installing packages...")
-        for pkg in @packages
+      # Install requirement
+      for requirement in @requirements
+        pastel = Pastel.new
+          Logger.log("#{pastel.bold(requirement.name)}")
+          
           # Do an environment test
           if @opts.env
-            # If package env is not defined, we expect it should always be installed regardless of environment
-            # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
-            next if pkg.env.any? && !pkg.env.include?(@opts.env)
-          else
-            # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-            next if pkg.env.any?
-          end
-
-          if pkg.do_check
-            Logger.success("#{pkg.name} is installed")
-          else
-            Logger.info("Installing: #{pkg.name}\r", use_print: true)
-            if pkg.do_install
-              Logger.success("#{pkg.name} was installed")
-              $stdout.flush
-            else
-              Logger.danger("#{pkg.name} was not installed")
-              $stdout.flush
-            end
-          end
-        end  
-        Logger.log("")
-      end
-      
-      # Handle requirements
-      if @requirements != nil 
-        Logger.log("Handling requirements...")
-        for requirement in @requirements
-          # Do an environment test
-          if @opts.env
-            # If package env is not defined, we expect it should always be installed regardless of environment
+            # If requirement env is not define, we expect it should always be installed regardless of environment
             # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
             next if requirement.env.any? && !requirement.env.include?(@opts.env)
-          else
-            # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-            next if requirement.env.any?
           end
 
-          if requirement.do_check
-            Logger.success("#{requirement.name}")
-          else
-            Logger.info("Handling: #{pkg.name}\r", use_print: true)
-            if requirement.do_install
-              Logger.success("#{requirement.name}")
-              $stdout.flush
+        if requirement.packages
+          Logger.log("Installing packages...",)
+          
+          for pkg in requirement.packages
+            if @opts.env
+              # If package env is not define, we expect it should always be installed regardless of environment
+              # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+              next if pkg.env.any? && !pkg.env.include?(@opts.env)
             else
-              Logger.danger("#{requirement.name}")
-              $stdout.flush
+              # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
+              next if pkg.env.any?
+            end
+
+            if pkg.do_check
+              Logger.success("#{pkg.name} is installed")
+            else
+              Logger.info("Installing: #{pkg.name}\r", use_print: true)
+              if pkg.do_install
+                Logger.success("#{pkg.name} was installed")
+                $stdout.flush
+              else
+                Logger.danger("#{pkg.name} was not installed")
+                $stdout.flush
+              end
             end
           end
         end
-        Logger.log("")
       end
-    
-      # Run post tasks
-      if @postTasks != nil
-        Logger.log("Running post tasks...")
 
-        for task in @postTasks
-          task_run(task)
+
+      if requirement.check != nil
+        Logger.log("\nHandling requirement...")
+
+        if requirement.do_check
+          Logger.success("Requirement is met")
+        else
+          Logger.info("Handling: #{pkg.name}\r", use_print: true)
+          if requirement.do_install
+            Logger.success("Requirement is met")
+            $stdout.flush
+          else
+            Logger.danger("Requirement is NOT met")
+            $stdout.flush
+          end
         end
       end
-
     end
 
     def self.init(opts)
