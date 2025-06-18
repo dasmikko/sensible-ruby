@@ -2,31 +2,132 @@
 
 To structure everything better, and making it efficient for setting up machines or projects, i've come up with a new specification.
 
+You are now able to completely able to define your own structure,
+
 sensible.yml inside a project for folder:
 
 ```yaml
-requirements: 
-  - postgres # Name of the requirement file
-  - httpd # Name of the requirement file
+packages:
+  - rpm: [btop]
+
+require: 
+  - .sensible/requirements/postgres17 # Path to the task
+  - .sensible/requirements/httpd
+
+tasks:
+  - .sensible/tasks/test
 
 options: 
   # Possible future options
-  package_install_command: sudo dnf install -y $0 # Global command for package installation
-  package_check_command: rpm -q -y $0 # Global check command for packages
 ```
-Now you can just place the requirements in the order you need things to be installed at. No more pre/post tasks.
 
-If a project just requires a few packages, just make a requirement that installs them and you're done.
+The nice thing here is, that the order of where you place the packages, require and tasks property matters. It parses the file from top-to-bottom, so in this example, it install packages first, handle requirements, and run tasks at the end. You could do it in complete reverse order if you wanted.
+
+The same thing with the require and tasks property, the list in there, will be handled in that order..
+
+When you add an requirement, it's the relative path from where you execute sensible from.
+
+## Folder structure example
+
+```
+.sensible/
+  requirements/
+    httpd.yml
+    postgresql17.yml
+  tasks/
+    another.yml
+    test.yml
+sensible.yml
+```
+
+You could also structure it like this:
+
+```
+services/
+  httpd.yml
+  postgresql17.yml
+tasks/
+  another.yml
+  test.yml
+hosts/
+  server1.yml
+  server2.yml
+```
+
+Then you run the command: `sensible -f check hosts/server1.yml` or `sensible -f install hosts/server1.yml`
+
+By default sensible will look for a sensible.yml in the folder you are executing sensible from.
 
 ## Tasks
-Tasks remain the same. It's just now ment for one off actions, like starting a dev server, updating the project. Stuff that you may need to do once in a while.
+Everything is basically a task, it manages packages, and the script to check and install the task.
 
-## Requirement files
-These are new, and it explains a single requirement for the project or machine. It explains which packages it needs, and has a `check` and `install` property for the more complex scenarios.
+### Properties
 
-`check` and `install` works by that the exit code has to return either 1 (failed) or 0 (success). They are optional if you just need system packages installed.
+#### name
+This is name of the task, should be short and simple
 
-`sensible.yml` also has a global `install` and `check` command now, if you know that you will install them all the same way, and make it easier to change for all of them, in case you switch distro.
+#### description
+This a longer description to help explain it in more detail what it does.
+
+#### require
+A task can require other things. Lets say you have a task that installs a frontend project, that can then require that you have a apache server installed to run. 
+
+**This property is optional**
+
+#### packages
+Here you can definethe packages a task should install. You define which type of package via the property name: `rpm`, `deb` or `aur`
+
+Example:
+
+```
+packages:
+  rpm: [btop] # RHEL based
+  deb: [btop] # Debian based
+  aur: [btop] # Arch linux based
+```
+
+**This property is optional**
+
+#### check
+This is the script you can use to check if the task was installed succesfully.
+
+You will most likely use this, if you are going to use the `script` property.
+
+**This property is optional**
+
+#### script
+This the install script for the task. Let's say you need to do a git clone, create a user, switch to that user etc.
+
+If this script exits with 0, it completed successfully
+
+**This property is optional**
+
+
+### Full example
+
+```yaml
+# .sensible/task/test.yml
+---
+name: Task example
+description: This installs an apache httpd server, shellopts gem
+require:
+  - .sensible/requirements/httpd # Remember, it's relative from execution path
+packages: # Optional if task does not require packages
+  deb: # Debian packages
+  aur: # Aur packages (Arch linux)
+  rpm: [httpd]
+check: |
+  # This is for a more complex check, like if you need to check a service is running, files exist, etc... 
+script: |
+  # Script is optional, as it's intended for tasks that require more than just installing various packages.
+  # Maybe you require things being installed in a certain order
+```
+
+
+
+
+
+
 
 ### Future ideas
 
@@ -35,23 +136,3 @@ I'm planning on allowing .rb-files too, for even more flexibility.
 
 #### Include other files
 It might be a nice feature to be able to include other files.
-
-### Example 
-A requirement-file in .sensible/requirements
-
-```yaml
----
-name: Apache server
-description: This installs an apache httpd server
-packages:
-  - name: httpd
-    check: rpm -q httpd # If omitted, it used the one from sensible.yml
-    install: sudo dnf install -y httpd # If omitted, it used the one from sensible.yml
-check: |
-  # This is for a more complex check, like if you need to check a service is running, files exist, etc... 
-install: |
-  # Install is now optional, as it's intended for tasks that require more than just installing system packages.
-  # Maybe you require things being installed in a certain order
-```
-
-  

@@ -1,7 +1,7 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env -S ruby --yjit
 
 SPEC = %(
-  @ A small tool to manage and deploy projects
+  @ A small tool to manage and deploy projects/machines
 
   Install and update systems much like ansible but using shell scripts. It uses
   a sensible.yml configuration file to control the process
@@ -10,17 +10,16 @@ SPEC = %(
     -e,env,environment=ENV
       Sets the environment (dev/prod/etc),
 
-    -f,file=FILE
+    -f,file=CONF:EFILE
       Path to sensible configuration file
 
-    -d,dir,directory=DIR
+    -d,dir,directory=EDIR
       Path to sensible directory. Default '.sensible'
 
     -v,verbose
-      Verbose output
+      Verbose
 
-    --version
-      Show version number
+    -a=EFILE
 
   COMMANDS
     check!
@@ -44,8 +43,9 @@ SPEC = %(
 
 require_relative '../lib/sensible.rb'
 require 'shellopts'
+require_relative '../lib/sensible/log'
 
-opts, args = ShellOpts::process(SPEC, ARGV)
+opts, args = ShellOpts::process(SPEC, ARGV, version_number: Sensible::VERSION)
 cmd = opts.subcommand!
 #cmd == :task! or args.expect(0) # Ensure no arguments except for task
 
@@ -54,38 +54,36 @@ if opts.verbose
   puts "  env: #{opts.env}"
   puts "  file: #{opts.file}"
   puts "  dir: #{opts.dir}"
+  puts "  a: #{opts.a}"
   puts "  args: #{args}"
   # puts "Command: #{cmd.to_s.sub(/!$/, "")}"
 end
 
-if (opts.version) 
-  puts Sensible::VERSION
-  exit(0)
-end
+if opts.subcommand == :init!
+  Sensible::Sensible.init(opts)
+  exit
+end 
 
+sensible = Sensible::Sensible.new("sensible.yml", opts, args)
 case opts.subcommand
-  when :init!
-    Sensible::Sensible.init(opts)
-  else
-    sensible = Sensible::Sensible.new("sensible.yml", opts, args)
-    case opts.subcommand
-      when :check!
-        sensible.check
-      when :install!
-        sensible.install
-      when :task!
-        case cmd.subcommand
-          when :list!; sensible.task_list
-          when :run!
-            arg = args.expect(1) # Expect a single argument to sensible task
-            sensible.task_run(arg)
-          when :create!
-            arg = args.expect(1) # Expect a single argument to sensible task
-            sensible.task_create(arg)
-        end
-    else
-      ShellOpts::ShellOpts.brief
+  when :check!
+    sensible.check
+  when :install!
+    sensible.install
+  when :task!
+    case opts.subcommand!.subcommand
+      when nil
+        Sensible::Logger::error "Missing subcommand"
+      when :list!; sensible.task_list
+      when :run!
+        arg = args.expect(1) # Expect a single argument to sensible task
+        sensible.task_run(arg)
+      when :create!
+        arg = args.expect(1) # Expect a single argument to sensible task
+        sensible.task_create(arg)
     end
+  else
+    ShellOpts::error "Missing command"
 end
 
 
