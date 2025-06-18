@@ -19,6 +19,9 @@ SPEC = %(
     -v,verbose
       Verbose output
 
+    --version
+      Show version number
+
   COMMANDS
     check!
       Check the project for missing dependencies
@@ -64,12 +67,16 @@ if opts.verbose
   # puts "Command: #{cmd.to_s.sub(/!$/, "")}"
 end
 
+if (opts.version) 
+  puts Sensible::VERSION
+  exit(0)
+end
+
 case opts.subcommand
   when :init!
     Sensible::Sensible.init(opts)
   else
     sensible = Sensible::Sensible.new("sensible.yml", opts, args)
-
     case opts.subcommand
       when :check!
         sensible.check
@@ -85,6 +92,9 @@ case opts.subcommand
             arg = args.expect(1) # Expect a single argument to sensible task
             sensible.task_create(arg)
         end
+    else
+      ShellOpts::ShellOpts.brief
     end
 end
+
 
