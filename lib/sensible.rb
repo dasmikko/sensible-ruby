@@ -12,7 +12,7 @@ module Sensible
     attr_reader :opts
     attr_reader :args
 
-    attr_reader :task_list
+    attr_reader :tasks
 
 
     def initialize(sensibleFileName, opts, args)
@@ -29,14 +29,40 @@ module Sensible
       # Load the Sensile file
       sensible_file_data = YAML.load_file(file_name)
 
+      @tasks = []
+
+      def process_task(task_path)
+        task_yaml = YAML.load_file(task_path + '.yml')
+        task = Task.new(task_yaml, task_path, @sensible)
+      
+        if task.require
+          task.require.each do |path|
+            process_task(path)
+          end
+        end
+
+        @tasks << task
+
+        # TODO: add task to list
+      end 
+
       sensible_file_data.each do |key, value|
         case key
           when "require"
             puts "go through requirements"
+
+            value.each do |path|
+              process_task(path)
+            end
           when "tasks"
             puts "go through tasks"
+            value.each do |path|
+              process_task(path)
+            end
         end 
       end
+
+      puts tasks.length
     end
 
 

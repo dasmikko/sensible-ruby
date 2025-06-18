@@ -2,5 +2,4 @@
 name: Apache server
 description: This installs an apache httpd server
 packages:
-  rpm: 
-    - httpd
+  rpm: [httpd] 
