@@ -1,8 +1,7 @@
 packages:
-  rpm:
-    - btop
+  rpm: [btop]
 
-requirements: 
+require: 
   - .sensible/services/httpd
   - .sensible/services/postgresql17
 

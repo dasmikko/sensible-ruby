@@ -12,24 +12,13 @@ module Sensible
     attr_reader :opts
     attr_reader :args
 
-    attr_reader :tasks
-    attr_reader :requirements
-    
-    attr_reader :sensible_folder
-    attr_reader :tasks_folder
-    attr_reader :requirements_folder
-
-    attr_reader :package_install_command
-    attr_reader :package_check_command
+    attr_reader :task_list
 
 
     def initialize(sensibleFileName, opts, args)
       @opts = opts
       @args = args
 
-      @sensible_folder = '.sensible'
-      @tasks_folder = 'tasks'
-      @requirements_folder = 'requirements'
 
       file_name = opts.file || sensibleFileName
       unless File.exist?(file_name)
@@ -40,23 +29,14 @@ module Sensible
       # Load the Sensile file
       sensible_file_data = YAML.load_file(file_name)
 
-      # Parse options
-      if sensible_file_data['options']
-        options = sensible_file_data['options']
-        if options['package_install_command'] 
-          @package_install_command = options['package_install_command'] 
-        end
-
-        if options['package_check_command'] 
-          @package_check_command = options['package_check_command'] 
-        end
+      sensible_file_data.each do |key, value|
+        case key
+          when "require"
+            puts "go through requirements"
+          when "tasks"
+            puts "go through tasks"
+        end 
       end
-        
-      # Parse packages
-      if sensible_file_data['requirements'] 
-        @requirements = Parse.parse_sensible_requirements(sensible_file_data['requirements'], self)
-      end
-     
     end
 
 
