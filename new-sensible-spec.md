@@ -56,6 +56,8 @@ hosts/
 
 Then you run the command: `sensible -f check hosts/server1.yml` or `sensible -f install hosts/server1.yml`
 
+If you want to have a hosts folder, I recommend using the `-f` option.
+
 By default sensible will look for a sensible.yml in the folder you are executing sensible from.
 
 ## Tasks
