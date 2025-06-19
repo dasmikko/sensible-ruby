@@ -7,7 +7,7 @@ module Sensible
     end
 
     def run_command(command)
-      if @script.include?("\n")
+      if command.include?("\n")
         temp_path = "/tmp/sensible"
         temp_file_name = "script.sh"
         temp_file_path = "#{temp_path}/#{temp_file_name}"
@@ -25,19 +25,19 @@ module Sensible
 
         if @sensible.opts.host
           puts "Run command on remote host: #{@sensible.opts.host}"
-          ssh user@remote 'bash -s' < myscript.sh
-          system(command, out: File::NULL, err: File::NULL)
+          system("ssh #{sensible.opts.host} 'bash -s' < #{temp_file_path}", out: File::NULL, err: File::NULL)
+          return $?.success?
         else
-          system(command, out: File::NULL, err: File::NULL)
+          system("bash -s < #{temp_file_path}", out: File::NULL, err: File::NULL)
           return $?.success?
         end
       else
-        shell = Shell.new(@sensible)
-        return shell.run_command(@script)         
+         system(command, out: File::NULL, err: File::NULL)
+         return $?.success?       
       end
       
       
-
+      
       
     end
   end
