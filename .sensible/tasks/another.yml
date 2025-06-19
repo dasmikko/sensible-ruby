@@ -1,7 +1,7 @@
 ---
 name: Another test task
 description: This is a sample task, and this is its description
-install: |
+script: |
   echo "This is a multi line script"
   echo "I should use a temp file to run"
   notify-send "This is the post task that ran!"

@@ -38,19 +38,21 @@ module Sensible
     
     # Install the package
     def do_install
-      install_command = ""
+      install_command = nil
 
-      if @install == nil 
-        install_command = "#{sensible.package_install_command}"
-        install_command.sub!("$0", @name)
-      else 
-        if sensible.package_install_command == nil
-          Logger.error('No install property, and there is no install check command set.')
-          exit(1)
-        end
+      case @distro
+      when "rpm"
+        install_command = "sudo dnf install -y #{name}"
+      when "deb"
+        install_command = "sudo apt get install -y #{name}"
+      when "aur"
+        install_command = "pacman -Syu #{name}"
+      end
 
-        install_command = @install
-      end 
+      if install_command == nil
+        Logger.error("Unknown install command")
+        exit(1)
+      end
 
       system(install_command, out: '/dev/null', err: File::NULL)
       return $?.success?   

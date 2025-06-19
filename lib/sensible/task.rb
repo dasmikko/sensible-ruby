@@ -33,6 +33,7 @@ module Sensible
       end
     end
 
+    # Check if the packages in this task is installed
     def do_packages_check
       has_all_packages_install = true
 
@@ -46,10 +47,21 @@ module Sensible
       
       return has_all_packages_install
     end
+
+    # Install the packages in this task
+    def do_packages_install
+      has_all_packages_install = true
+
+      @packages.each do |package|
+        if !package.do_install
+          has_all_packages_install = false
+        end
+      end
+
+      return has_all_packages_install
+    end
     
     def do_check
-      do_verify()
-
       # If check is not set, always run the task
       if @check == nil
         return false
@@ -58,11 +70,10 @@ module Sensible
       # If there is no check, default to false, to force task to script every time
       system(@check, out: File::NULL)
       return $?.success?
-    end  
+    end
 
     def do_script
       # TODO: Handle the show output property!
-
       if @script.include?("\n")
         temp_path = "/tmp/sensible"
         temp_file_name = "script.sh"
@@ -79,10 +90,10 @@ module Sensible
         # Make it executable
         File.chmod(0700, temp_file_path)
 
-        system("#{temp_file_path}", out: File::NULL)
+        system("#{temp_file_path}", out: File::NULL, err: File::NULL)
         return $?.success?  
       else
-        system(@script, out: File::NULL)
+        system(@script, out: File::NULL, err: File::NULL)
         return $?.success?        
       end
     end

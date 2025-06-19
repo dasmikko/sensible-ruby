@@ -1,4 +1,7 @@
 ---
 name: This is a sample task in a seperate file
 description: This is a sample task, and this is its description
-install: notify-send "This is the pre task that ran!"
+packages:
+  rpm: [btop]
+check: command -v fuck
+script: sudo dnf update --refresh

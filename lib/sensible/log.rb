@@ -71,5 +71,13 @@ module Sensible
 
       prompt.yes?("#{spaceIndent}#{message}")
     end
+
+    def self.clear_line()
+      print "\r\e[K"
+    end
+
+    def self.flush
+      $stdout.flush
+    end
   end
 end

@@ -63,12 +63,15 @@ module Sensible
 
     # Run all the checks for packages and requirements
     def check
-      
-      for task in @tasks
-        pastel = Pastel.new
-        Logger.log("#{pastel.bold(task.name)}")
 
-    
+      @tasks.each_with_index do |task, index|
+        pastel = Pastel.new
+        if index > 0
+          Logger.log("\n#{pastel.bold(task.name)}")
+        else
+          Logger.log("#{pastel.bold(task.name)}")
+        end
+
         # Do an environment test
         # if @opts.env
         #   # If requirement env is not define, we expect it should always be installed regardless of environment
@@ -83,77 +86,73 @@ module Sensible
           end
         end
 
-        if task.do_check
-          Logger.success("Is installed!")
+        if task.check
+          if task.do_check
+            Logger.success("Is installed!")
+          else
+            Logger.danger("Is NOT installed!")
+          end
         end
-
       end
-      
-      
     end
 
     def install
       # Prewarm sudo, to prevent asking too much
       system('sudo -v')
 
-      # Install requirement
-      for requirement in @requirements
+      @tasks.each_with_index do |task, index|
         pastel = Pastel.new
-          Logger.log("#{pastel.bold(requirement.name)}")
-          
-          # Do an environment test
-          if @opts.env
-            # If requirement env is not define, we expect it should always be installed regardless of environment
-            # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
-            next if requirement.env.any? && !requirement.env.include?(@opts.env)
-          end
-
-        if requirement.packages
-          Logger.log("Installing packages...",)
-          
-          for pkg in requirement.packages
-            if @opts.env
-              # If package env is not define, we expect it should always be installed regardless of environment
-              # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
-              next if pkg.env.any? && !pkg.env.include?(@opts.env)
-            else
-              # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-              next if pkg.env.any?
-            end
-
-            if pkg.do_check
-              Logger.success("#{pkg.name} is installed")
-            else
-              Logger.info("Installing: #{pkg.name}\r", use_print: true)
-              if pkg.do_install
-                Logger.success("#{pkg.name} was installed")
-                $stdout.flush
-              else
-                Logger.danger("#{pkg.name} was not installed")
-                $stdout.flush
-              end
-            end
-          end
-        end
-      end
-
-
-      if requirement.check != nil
-        Logger.log("\nHandling requirement...")
-
-        if requirement.do_check
-          Logger.success("Requirement is met")
+        if index > 0
+          Logger.log("\n#{pastel.bold(task.name)}")
         else
-          Logger.info("Handling: #{pkg.name}\r", use_print: true)
-          if requirement.do_install
-            Logger.success("Requirement is met")
-            $stdout.flush
+          Logger.log("#{pastel.bold(task.name)}")
+        end
+
+
+        # Do an environment test
+        # if @opts.env
+        #   # If requirement env is not define, we expect it should always be installed regardless of environment
+        #   # If user has defined an environment, skip if the set environment isn't in the package enviroment list
+        #   next if requirement.env.any? && !requirement.env.include?(@opts.env)
+        # end
+        if task.packages.length > 0
+          if task.do_packages_check
+            Logger.success("Packages installed!")
           else
-            Logger.danger("Requirement is NOT met")
-            $stdout.flush
+            Logger.info("Installing packages...\r", use_print: true)
+            if task.do_packages_install
+              Logger.clear_line
+              Logger.success("Packages installed!")
+            else
+              Logger.clear_line
+              Logger.danger("Packages NOT installed!")
+            end
+
+            Logger.flush
+          end
+        end
+
+        if task.check
+          if task.do_check
+            Logger.success("Is installed!")
+          else
+            if task.script
+              Logger.info("Running task...\r", use_print: true)
+              if task.do_script
+                Logger.clear_line
+                Logger.success("Is installed!")
+              else
+                Logger.clear_line
+                Logger.danger("Is NOT installed!")
+              end
+              Logger.flush
+            else
+              Logger.danger("Is NOT installed!")
+            end
           end
         end
       end
+
     end
 
     def self.init(opts)
