@@ -35,7 +35,7 @@ module Sensible
       @tasks = []
       def process_task(task_path)
         task_yaml = YAML.load_file(task_path + '.yml')
-        task = Task.new(task_yaml, task_path, @sensible)
+        task = Task.new(task_yaml, task_path, self)
       
         if task.require
           task.require.each do |path|

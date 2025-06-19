@@ -16,6 +16,9 @@ SPEC = %(
     -d,dir,directory=EDIR
       Path to sensible directory. Default '.sensible'
 
+    --host=HOST
+      Run tasks agains a remote machine over ssh. Requires ssh keys added to machine.
+
     -v,verbose
       Verbose
 

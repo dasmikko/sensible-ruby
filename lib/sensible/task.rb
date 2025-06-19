@@ -1,4 +1,5 @@
 require_relative 'package'
+require_relative 'shell'
 
 module Sensible
   class Task
@@ -75,26 +76,13 @@ module Sensible
     def do_script
       # TODO: Handle the show output property!
       if @script.include?("\n")
-        temp_path = "/tmp/sensible"
-        temp_file_name = "script.sh"
-        temp_file_path = "#{temp_path}/#{temp_file_name}"
+       
 
-        # Make sure we have the tmp folder created
-        FileUtils.mkdir_p(temp_path)
-
-        File.open(temp_file_path, "w") do |f| 
-          f.puts "#!/usr/bin/env bash\n\n"
-          f.write(@script)
-        end
-
-        # Make it executable
-        File.chmod(0700, temp_file_path)
-
-        system("#{temp_file_path}", out: File::NULL, err: File::NULL)
-        return $?.success?  
+        shell = Shell.new(@sensible)
+        return shell.run_command(@)  
       else
-        system(@script, out: File::NULL, err: File::NULL)
-        return $?.success?        
+        shell = Shell.new(@sensible)
+        return shell.run_command(@script)         
       end
     end
 

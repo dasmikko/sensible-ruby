@@ -1,4 +1,5 @@
 require_relative 'log'
+require_relative 'shell'
 require 'tty-prompt'
 require 'pastel'
 
@@ -32,8 +33,9 @@ module Sensible
         exit(1)
       end
 
-      system(check_command, out: File::NULL, err: File::NULL)
-      return $?.success?        
+      # Run the shell command
+      shell = Shell.new(@sensible)
+      return shell.run_command(check_command)        
     end
     
     # Install the package
@@ -54,8 +56,8 @@ module Sensible
         exit(1)
       end
 
-      system(install_command, out: '/dev/null', err: File::NULL)
-      return $?.success?   
+      shell = Shell.new(@sensible)
+      return shell.run_command(install_command)  
     end 
   end
 end

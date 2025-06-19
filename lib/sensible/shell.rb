@@ -1,0 +1,44 @@
+module Sensible
+  class Shell
+    attr_reader :sensible
+
+    def initialize(sensible)
+      @sensible = sensible
+    end
+
+    def run_command(command)
+      if @script.include?("\n")
+        temp_path = "/tmp/sensible"
+        temp_file_name = "script.sh"
+        temp_file_path = "#{temp_path}/#{temp_file_name}"
+
+        # Make sure we have the tmp folder created
+        FileUtils.mkdir_p(temp_path)
+
+        File.open(temp_file_path, "w") do |f| 
+          f.puts "#!/usr/bin/env bash\n\n"
+          f.write(command)
+        end
+
+        # Make it executable
+        File.chmod(0700, temp_file_path)
+
+        if @sensible.opts.host
+          puts "Run command on remote host: #{@sensible.opts.host}"
+          ssh user@remote 'bash -s' < myscript.sh
+          system(command, out: File::NULL, err: File::NULL)
+        else
+          system(command, out: File::NULL, err: File::NULL)
+          return $?.success?
+        end
+      else
+        shell = Shell.new(@sensible)
+        return shell.run_command(@script)         
+      end
+      
+      
+
+      
+    end
+  end
+end
