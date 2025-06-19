@@ -1,9 +1,9 @@
 packages:
   rpm: [btop]
 
+
 require: 
-  - .sensible/services/httpd
-  - .sensible/services/postgresql17
+  - .sensible/apps/project-frontend
 
 tasks:
   - .sensible/tasks/test

@@ -29,8 +29,10 @@ module Sensible
       # Load the Sensile file
       sensible_file_data = YAML.load_file(file_name)
 
-      @tasks = []
 
+      # Recursively go through all the tasks inside the sensible file
+      # Add them to a list, that we will go through later
+      @tasks = []
       def process_task(task_path)
         task_yaml = YAML.load_file(task_path + '.yml')
         task = Task.new(task_yaml, task_path, @sensible)
@@ -42,76 +44,49 @@ module Sensible
         end
 
         @tasks << task
-
-        # TODO: add task to list
       end 
 
       sensible_file_data.each do |key, value|
         case key
           when "require"
-            puts "go through requirements"
-
             value.each do |path|
               process_task(path)
             end
           when "tasks"
-            puts "go through tasks"
             value.each do |path|
               process_task(path)
             end
         end 
       end
-
-      puts tasks.length
     end
 
 
     # Run all the checks for packages and requirements
     def check
       
-      
-
-      for requirement in @requirements
+      for task in @tasks
         pastel = Pastel.new
-        Logger.log("#{pastel.bold(requirement.name)}")
+        Logger.log("#{pastel.bold(task.name)}")
 
-        if requirement.packages
-           # Do an environment test
-          if @opts.env
-            # If requirement env is not define, we expect it should always be installed regardless of environment
-            # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
-            next if requirement.env.any? && !requirement.env.include?(@opts.env)
-          end
-
-          Logger.log("Checking for installed packages...",)
-          
-          for pkg in requirement.packages
-            if @opts.env
-              # If package env is not define, we expect it should always be installed regardless of environment
-              # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
-              next if pkg.env.any? && !pkg.env.include?(@opts.env)
-            else
-              # If env contains anything, when env is not defined in opts, skip it, as this is not the correct env
-              next if pkg.env.any?
-            end
-
-            if pkg.do_check
-              Logger.success("#{pkg.name} is installed")
-            else
-              Logger.danger("#{pkg.name} was NOT installed")
-            end
-          end
-        end
-
-        if requirement.check != nil
-          Logger.log("\nChecking if requirement is met...")
-
-          if requirement.do_check
-            Logger.success("Requirement is met")
+    
+        # Do an environment test
+        # if @opts.env
+        #   # If requirement env is not define, we expect it should always be installed regardless of environment
+        #   # If user has defined an environment, skip if the set environment isn't in the package enviroment list 
+        #   next if requirement.env.any? && !requirement.env.include?(@opts.env)
+        # end
+        if task.packages.length > 0
+          if task.do_packages_check
+            Logger.success("Packages installed!")
           else
-            Logger.danger("Requirement is NOT met")
+            Logger.danger("Packages NOT installed!")
           end
         end
+
+        if task.do_check
+          Logger.success("Is installed!")
+        end
+
       end
       
       

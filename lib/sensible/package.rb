@@ -6,36 +6,34 @@ module Sensible
   class Package
     attr_reader :sensible
     attr_reader :name
-    attr_reader :check
-    attr_reader :install
-    attr_reader :env
+    attr_reader :distro
 
-    def initialize(packageHash, sensible)
-      @name = packageHash['name']
-      @check = packageHash['check']
-      @install = packageHash['install']
-      @env = packageHash['env'] || []
-
+    def initialize(packageName, distro, sensible)
+      @name = packageName
+      @distro = distro
       @sensible = sensible
     end
 
     # Check if the package is installed
     def do_check
-      if @check
-        result = `#{@check}`
-        return $?.success?
-      else 
-        if sensible.package_check_command == nil
-          Logger.error('No check property, and there is no global check command set.')
-          exit(1)
-        end
+      check_command = nil
 
-        check_command = "#{sensible.package_check_command}"
-        check_command.sub!("$0", @name)
+      case @distro
+        when "rpm"
+          check_command = "rpm -q #{name}"
+        when "deb"
+          check_command = "dpkg-query -W #{name}"
+        when "aur"
+          check_command = "pacman -Qi #{name}"
+      end
       
-        system(check_command, out: File::NULL, err: File::NULL)
-        return $?.success?   
-      end         
+      if check_command == nil
+        Logger.error("Unknown check command")
+        exit(1)
+      end
+
+      system(check_command, out: File::NULL, err: File::NULL)
+      return $?.success?        
     end
     
     # Install the package

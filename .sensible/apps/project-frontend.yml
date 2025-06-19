@@ -1,0 +1,12 @@
+name: Project frontend
+description: Installs the project vuejs frontend
+require:
+  - .sensible/services/httpd
+  - .sensible/runtimes/pnpm
+  - .sensible/tools/git
+check: echo "hej"
+script: |
+  # Git clone project
+  # Symlink to /var/www/project.lan
+  # pnpm install
+  # pnpm build

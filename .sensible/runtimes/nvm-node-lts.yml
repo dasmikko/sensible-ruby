@@ -1,0 +1,5 @@
+name: NodeJS - LTS
+description: This installs Nodejs LTS
+check: command -v node
+script: |
+  nvm install --lts

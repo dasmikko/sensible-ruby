@@ -4,6 +4,7 @@ module Sensible
   class Task
     attr_reader :sensible
     attr_reader :name
+    attr_reader :packages
     attr_reader :check
     attr_reader :script
     attr_reader :require
@@ -21,6 +22,29 @@ module Sensible
       @file_name = file_name
       @description = taskHash['description']
       @show_output = taskHash['showOutput']
+      
+      @packages = []
+      if taskHash['packages']
+        taskHash['packages'].each do |distro, packages|
+          packages.each do |packageName|
+            @packages << Package.new(packageName, distro, sensible)
+          end
+        end
+      end
+    end
+
+    def do_packages_check
+      has_all_packages_install = true
+
+      @packages.each do |package|
+        package.name
+
+        if !package.do_check
+          has_all_packages_install = false
+        end
+      end
+      
+      return has_all_packages_install
     end
     
     def do_check
@@ -64,13 +88,6 @@ module Sensible
     end
 
     def do_verify
-      if !@script
-        pastel = Pastel.new
-        Logger.error("This is not valid task, #{pastel.bold("script")} property is missing!")
-        exit(1)
-        return false
-      end
-
       return true
     end
   end

@@ -1,0 +1,4 @@
+name: Git
+description: Source control
+packages:
+  rpm: [git]

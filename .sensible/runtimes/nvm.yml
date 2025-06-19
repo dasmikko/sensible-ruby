@@ -1,0 +1,6 @@
+name: NVM - Node version manager
+description: This installs Nodejs version manager
+check: |
+  [ -s "$HOME/.nvm/nvm.sh" ] && exit 0 || exit 1
+script: |
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash

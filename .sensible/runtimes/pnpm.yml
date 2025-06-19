@@ -1,0 +1,7 @@
+name: PNPM
+description: Alternative package manager
+require:
+  - .sensible/runtimes/nvm
+  - .sensible/runtimes/nvm-node-lts
+check: command -v pnpm
+script: npm -g install pnpm
