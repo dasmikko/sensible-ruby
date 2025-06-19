@@ -32,8 +32,14 @@ module Sensible
           return $?.success?
         end
       else
+        if @sensible.opts.host
+          puts "Run command on remote host: #{@sensible.opts.host}"
+          system("ssh #{sensible.opts.host} -t '#{command}'", out: File::NULL, err: File::NULL)
+          return $?.success?
+        else
          system(command, out: File::NULL, err: File::NULL)
-         return $?.success?       
+         return $?.success?   
+        end    
       end
       
       
