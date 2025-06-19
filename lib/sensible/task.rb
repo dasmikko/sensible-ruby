@@ -75,15 +75,8 @@ module Sensible
 
     def do_script
       # TODO: Handle the show output property!
-      if @script.include?("\n")
-       
-
-        shell = Shell.new(@sensible)
-        return shell.run_command(@)  
-      else
-        shell = Shell.new(@sensible)
-        return shell.run_command(@script)         
-      end
+      shell = Shell.new(@sensible)
+      return shell.run_command(@script)         
     end
 
     def do_verify
