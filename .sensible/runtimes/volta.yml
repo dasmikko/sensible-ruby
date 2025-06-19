@@ -1,0 +1,6 @@
+name: Volta - Node version manager
+description: This installs volta
+check: |
+  command -v volta
+script: |
+  curl https://get.volta.sh | bash
