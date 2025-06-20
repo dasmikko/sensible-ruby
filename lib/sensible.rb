@@ -33,13 +33,13 @@ module Sensible
       # Recursively go through all the tasks inside the sensible file
       # Add them to a list, that we will go through later
       @tasks = []
-      def process_task(task_path)
+      def process_task(task_path, task_user = nil)
         task_yaml = YAML.load_file(task_path + '.yml')
-        task = Task.new(task_yaml, task_path, self)
+        task = Task.new(task_yaml, task_path, task_user, self)
       
         if task.require
           task.require.each do |path|
-            process_task(path)
+            process_task(path, task.user)
           end
         end
 

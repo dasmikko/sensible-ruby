@@ -11,10 +11,11 @@ module Sensible
     attr_reader :require
     attr_reader :env
     attr_reader :file_name
+    attr_reader :user
     attr_reader :description
     attr_accessor :show_output
 
-    def initialize(taskHash, file_name, sensible)
+    def initialize(taskHash, file_name, user = nil, sensible)
       @name = taskHash['name']
       @check = taskHash['check']
       @script = taskHash['script']
@@ -23,6 +24,14 @@ module Sensible
       @file_name = file_name
       @description = taskHash['description']
       @show_output = taskHash['showOutput']
+      
+      # If task is initalized with user, force use of that
+      if user != nil
+        @user = user
+      else
+        @user = taskHash['user']
+      end
+
       @sensible = sensible
       
       @packages = []
@@ -64,6 +73,10 @@ module Sensible
     end
     
     def do_check
+      if @user
+        puts "Check as user: " + @user
+      end
+
       # If check is not set, always run the task
       if @check == nil
         return false
