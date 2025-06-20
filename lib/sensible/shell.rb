@@ -7,6 +7,10 @@ module Sensible
     end
 
     def run_command(command, show_output: false)
+      # Look into using net-ssh: https://github.com/net-ssh/net-ssh
+
+
+
       # If command contains new lines, use a temporary file
       if command.include?("\n")
         temp_path = "/tmp/sensible"
