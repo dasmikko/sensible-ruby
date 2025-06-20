@@ -63,13 +63,21 @@ module Sensible
 
     # Run all the checks for packages and requirements
     def check
-
+      # Prewarm sudo, to prevent asking too much
+      shell = Shell.new(self)
+      shell.run_command('sudo -v', show_output: true)
+      
       @tasks.each_with_index do |task, index|
+        user = nil
+        if task.user
+          user = "(#{task.user})"
+        end
+
         pastel = Pastel.new
         if index > 0
-          Logger.log("\n#{pastel.bold(task.name)}")
+          Logger.log("\n#{pastel.bold(task.name)} #{user}")
         else
-          Logger.log("#{pastel.bold(task.name)}")
+          Logger.log("#{pastel.bold(task.name)} #{user}")
         end
 
         # Do an environment test
