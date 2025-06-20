@@ -4,6 +4,7 @@ packages:
 
 require: 
   - .sensible/apps/project-frontend
+  - .sensible/apps/project-frontend-2
 
 tasks:
   - .sensible/tasks/test
