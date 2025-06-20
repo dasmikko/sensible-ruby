@@ -73,10 +73,6 @@ module Sensible
     end
     
     def do_check
-      if @user
-        puts "Check as user: " + @user
-      end
-
       # If check is not set, always run the task
       if @check == nil
         return false
@@ -84,7 +80,7 @@ module Sensible
 
       # If there is no check, default to false, to force task to script every time
       shell = Shell.new(@sensible)
-      return shell.run_command(@check)
+      return shell.run_command(@check, @user)
     end
 
     def do_script
