@@ -6,10 +6,10 @@ module Sensible
       @sensible = sensible
     end
 
-    def run_command(command, show_output: false)
+    def run_command(command, user = nil)
       # Look into using net-ssh: https://github.com/net-ssh/net-ssh
 
-
+      show_output = false
 
       # If command contains new lines, use a temporary file
       if command.include?("\n")
@@ -28,26 +28,17 @@ module Sensible
         # Make it executable
         File.chmod(0700, temp_file_path)
 
-        if @sensible.opts.host
-          system("ssh #{sensible.opts.host} 'bash -s' < #{temp_file_path}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
-          return $?.success?
-        else
-          system("bash -s < #{temp_file_path}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
-          return $?.success?
-        end
+        system("bash -s < #{temp_file_path}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
+        return $?.success?
       else
-        if @sensible.opts.host
-          system("ssh #{sensible.opts.host} -t '#{command}'", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
-          return $?.success?
-        else
-         system(command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
-         return $?.success?   
-        end    
+        if user != nil
+          system("sudo -u #{user} #{command}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
+        else 
+          system(command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
+        end
+        return $?.success?    
       end
-      
-      
-      
-      
+    
     end
   end
 end
