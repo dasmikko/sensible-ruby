@@ -7,6 +7,7 @@ module Sensible
     end
 
     def run_command(command)
+      # If command contains new lines, use a temporary file
       if command.include?("\n")
         temp_path = "/tmp/sensible"
         temp_file_name = "script.sh"
@@ -24,7 +25,6 @@ module Sensible
         File.chmod(0700, temp_file_path)
 
         if @sensible.opts.host
-          puts "Run command on remote host: #{@sensible.opts.host}"
           system("ssh #{sensible.opts.host} 'bash -s' < #{temp_file_path}", out: File::NULL, err: File::NULL)
           return $?.success?
         else
@@ -33,7 +33,6 @@ module Sensible
         end
       else
         if @sensible.opts.host
-          puts "Run command on remote host: #{@sensible.opts.host}"
           system("ssh #{sensible.opts.host} -t '#{command}'", out: File::NULL, err: File::NULL)
           return $?.success?
         else
