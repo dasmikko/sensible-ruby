@@ -23,6 +23,7 @@ module Sensible
       @file_name = file_name
       @description = taskHash['description']
       @show_output = taskHash['showOutput']
+      @sensible = sensible
       
       @packages = []
       if taskHash['packages']
@@ -69,8 +70,8 @@ module Sensible
       end
 
       # If there is no check, default to false, to force task to script every time
-      system(@check, out: File::NULL)
-      return $?.success?
+      shell = Shell.new(@sensible)
+      return shell.run_command(@check)
     end
 
     def do_script
