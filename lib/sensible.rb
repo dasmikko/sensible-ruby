@@ -98,7 +98,8 @@ module Sensible
 
     def install
       # Prewarm sudo, to prevent asking too much
-      system('sudo -v')
+      shell = Shell.new(self)
+      shell.run_command('sudo -v', show_output: true)
 
       @tasks.each_with_index do |task, index|
         pastel = Pastel.new

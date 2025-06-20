@@ -6,7 +6,7 @@ module Sensible
       @sensible = sensible
     end
 
-    def run_command(command)
+    def run_command(command, show_output: false)
       # If command contains new lines, use a temporary file
       if command.include?("\n")
         temp_path = "/tmp/sensible"
@@ -25,18 +25,18 @@ module Sensible
         File.chmod(0700, temp_file_path)
 
         if @sensible.opts.host
-          system("ssh #{sensible.opts.host} 'bash -s' < #{temp_file_path}", out: File::NULL, err: File::NULL)
+          system("ssh #{sensible.opts.host} 'bash -s' < #{temp_file_path}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
           return $?.success?
         else
-          system("bash -s < #{temp_file_path}", out: File::NULL, err: File::NULL)
+          system("bash -s < #{temp_file_path}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
           return $?.success?
         end
       else
         if @sensible.opts.host
-          system("ssh #{sensible.opts.host} -t '#{command}'", out: File::NULL, err: File::NULL)
+          system("ssh #{sensible.opts.host} -t '#{command}'", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
           return $?.success?
         else
-         system(command, out: File::NULL, err: File::NULL)
+         system(command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
          return $?.success?   
         end    
       end
