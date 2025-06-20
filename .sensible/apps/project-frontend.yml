@@ -5,7 +5,6 @@ require:
   - .sensible/runtimes/pnpm
   - .sensible/tools/git
 check: echo "hej"
-user: frontend
 script: |
   # Git clone project
   # Symlink to /var/www/project.lan
