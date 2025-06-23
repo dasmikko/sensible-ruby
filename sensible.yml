@@ -4,9 +4,9 @@ packages:
 
 tasks:
   - name: Inline task
-    check: id -u shit
+    check: id -u sample
     script: notify-send "Create user"
-    
+
   - .sensible/apps/project-frontend
   - .sensible/apps/project-frontend-2
   - .sensible/tasks/test
