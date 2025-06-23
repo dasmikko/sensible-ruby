@@ -28,7 +28,10 @@ module Sensible
       # If task is initalized with user, force use of that
       if user != nil
         @user = user
-      else
+      end
+      
+      # Always use the user from the task
+      if taskHash['user'] != nil
         @user = taskHash['user']
       end
 
