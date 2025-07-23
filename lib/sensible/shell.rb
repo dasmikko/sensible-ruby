@@ -13,23 +13,24 @@ module Sensible
 
       if (@sensible.opts.host != nil)
         # Run command on remote machine
-        Net::SSH.start(@sensible.opts.host, 'root') do |ssh|
-          
+        Net::SSH.start(@sensible.opts.host, 'root') do |ssh| 
+                   
           final_command = nil
 
           if user != nil
-            final_command = "sudo -u #{user} #{command}"
+            final_command = "sudo -iu #{user} bash -lc  \"#{command}\""
           else 
             final_command = command
-          end 
+          end
 
           out, err, code = exec_with_status(ssh, final_command)
           
-          if @sensible.opts.verbose 
+          if @sensible.opts.verbose
             puts "STDOUT: #{out}"
             puts "STDERR: #{err}"
             puts "EXIT CODE: #{code}"
           end
+
 
           if code == 0
             return true
@@ -52,7 +53,6 @@ module Sensible
           end
           return $?.success?    
         end
-
       end
     end
 

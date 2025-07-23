@@ -5,7 +5,16 @@ packages:
 tasks:
   - name: Inline task
     check: id -u sample
-    script: notify-send "Create user"
+    script: echo "Create user" 
+
+  - name: whoami
+    user: sample
+    check: whoami
+    script: whoami
+
+  - name: whoami
+    check: whoami
+    script: echo whoami
 
   - .sensible/apps/project-frontend
   - .sensible/apps/project-frontend-2

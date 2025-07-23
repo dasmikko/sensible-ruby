@@ -4,4 +4,4 @@ description: This is a sample task, and this is its description
 packages:
   rpm: [btop]
 check: command -v fuck
-script: sudo dnf update --refresh
+script: sudo dnf update --refresh -n
