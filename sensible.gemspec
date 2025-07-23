@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pastel"
   spec.add_dependency "tty-spinner"
   spec.add_dependency "tty-prompt"
+  spec.add_dependency "net-ssh"
 
   # For more informatioscript: sudo dnf update --refresh
   #n and examples about making a new gem, check out our
