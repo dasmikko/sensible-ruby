@@ -6,7 +6,7 @@ module Sensible
       @sensible = sensible
     end
 
-    def run_command(command, user = nil)
+    def run_command(command, user = nil, show_output: false)
       # Look into using net-ssh: https://github.com/net-ssh/net-ssh
 
       show_output = @sensible.opts.verbose
