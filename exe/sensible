@@ -59,7 +59,6 @@ if opts.verbose
   puts "  dir: #{opts.dir}"
   puts "  a: #{opts.a}"
   puts "  args: #{args}"
-  # puts "Command: #{cmd.to_s.sub(/!$/, "")}"
 end
 
 if opts.subcommand == :init!
