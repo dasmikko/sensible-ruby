@@ -79,7 +79,7 @@ module Sensible
       @tasks.each_with_index do |task, index|
         user = nil
         if task.user
-          user = "(#{task.user})"
+          user = "(User: #{task.user})"
         end
 
         pastel = Pastel.new
