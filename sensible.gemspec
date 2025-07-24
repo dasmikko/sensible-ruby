@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-spinner"
   spec.add_dependency "tty-prompt"
   spec.add_dependency "net-ssh"
+  spec.add_dependency 'logger', '~> 1.6.0' # For silencing net-ssh
 
   # For more informatioscript: sudo dnf update --refresh
   #n and examples about making a new gem, check out our
