@@ -89,7 +89,7 @@ module Sensible
     def do_script
       # TODO: Handle the show output property!
       shell = Shell.new(@sensible)
-      return shell.run_command(@script)         
+      return shell.run_command(@script, @user)         
     end
 
     def do_verify
