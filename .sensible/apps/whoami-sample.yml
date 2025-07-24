@@ -1,0 +1,7 @@
+name: Tests whoami as sample user
+description: Tests whoami as sample user
+require:
+  - .sensible/tools/whoami
+check: fail
+user: sample
+script: whoami

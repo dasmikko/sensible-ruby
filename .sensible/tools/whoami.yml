@@ -1,0 +1,4 @@
+name: Check who am i?
+description: Easy way to test whoami
+script: |
+  whoami
