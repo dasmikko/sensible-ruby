@@ -1,4 +1,5 @@
 require 'net/ssh'
+require 'shellwords'
 
 module Sensible
   class Shell
@@ -37,15 +38,17 @@ module Sensible
       else
         # Standard local shell command
         # If command contains new lines, use a temporary file
+        if user != nil
+          system("sudo runuser -l #{user} -c '#{command}'", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
+          return $?.success?
+        end
+
+
         if command.include?("\n")
-          system("bash", "-c", command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
+          system("bash", "-c", command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL)) 
           return $?.success?
         else
-          if user != nil
-            system("sudo -u #{user} #{command}", out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
-          else 
-            system(command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
-          end
+          system(command, out: (show_output ? $stdout : File::NULL), err: (show_output ? $stderr : File::NULL))
           return $?.success?    
         end
       end

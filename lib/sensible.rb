@@ -103,12 +103,10 @@ module Sensible
           end
         end
 
-        if task.check
-          if task.do_check
-            Logger.success("Is installed!")
-          else
-            Logger.danger("Is NOT installed!")
-          end
+        if task.do_check
+          Logger.success("Is installed!")
+        else
+          Logger.danger("Is NOT installed!")
         end
       end
     end
@@ -156,23 +154,21 @@ module Sensible
           end
         end
 
-        if task.check
-          if task.do_check
-            Logger.success("Is installed!")
-          else
-            if task.script
-              Logger.info("Running task...\r", use_print: true)
-              if task.do_script
-                Logger.clear_line
-                Logger.success("Is installed!")
-              else
-                Logger.clear_line
-                Logger.danger("Is NOT installed!")
-              end
-              Logger.flush
+        if task.do_check
+          Logger.success("Is installed!")
+        else
+          if task.copy || task.script
+            Logger.info("Running task...\r", use_print: true)
+            if task.do_script
+              Logger.clear_line
+              Logger.success("Is installed!")
             else
+              Logger.clear_line
               Logger.danger("Is NOT installed!")
             end
+            Logger.flush
+          else
+            Logger.danger("Is NOT installed!")
           end
         end
       end

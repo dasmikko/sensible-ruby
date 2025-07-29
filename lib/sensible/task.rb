@@ -1,5 +1,7 @@
 require_relative 'package'
 require_relative 'shell'
+require 'fileutils'
+require 'shellwords'
 
 module Sensible
   class Task
@@ -14,6 +16,7 @@ module Sensible
     attr_reader :user
     attr_reader :description
     attr_accessor :show_output
+    attr_reader :copy
 
     def initialize(taskHash, file_name, user = nil, sensible)
       @name = taskHash['name']
@@ -24,6 +27,7 @@ module Sensible
       @file_name = file_name
       @description = taskHash['description']
       @show_output = taskHash['showOutput']
+      @copy = taskHash['copy']
       
       # If task is initalized with user, force use of that
       if user != nil
@@ -58,8 +62,8 @@ module Sensible
           has_all_packages_install = false
         end
       end
-      
-      return has_all_packages_install
+    
+      return has_all_packages_install     
     end
 
     # Install the packages in this task
@@ -76,6 +80,11 @@ module Sensible
     end
     
     def do_check
+      # Always return false to force copy
+      if @copy != nil
+        return false
+      end
+
       # If check is not set, always run the task
       if @check == nil
         return false
@@ -87,6 +96,37 @@ module Sensible
     end
 
     def do_script
+      if @copy != nil
+        origin = File.expand_path(@copy['origin'])
+        destination = @copy['dest']
+        destination_expanded = File.expand_path(@copy['dest'])
+        
+        puts destination
+
+        commmand = nil
+        
+        if @sensible.opts.host 
+          if @user 
+
+            command = "rsync -avu --delete #{Shellwords.escape(origin)} root@#{@sensible.opts.host}:#{Shellwords.escape(destination.sub('~', "/home/#{user}"))}"
+          else 
+            command = "rsync -avu --delete #{Shellwords.escape(origin)} root@#{@sensible.opts.host}:#{Shellwords.escape(destination)}"
+          end
+          
+        else 
+          command = "rsync -avu --delete #{Shellwords.escape(origin)} #{Shellwords.escape(destination_expanded)}"
+        end
+        
+        if @sensible.opts.verbose 
+          system(command)
+        else 
+          system(command, out: File::NULL, err: File::NULL)
+        end
+        
+        return $?.success?   
+      end
+
+
       # TODO: Handle the show output property!
       shell = Shell.new(@sensible)
       return shell.run_command(@script, @user)         
@@ -94,6 +134,20 @@ module Sensible
 
     def do_verify
       return true
+    end
+
+
+    def check_exists(path)
+      is_folder = path.end_with?('/')
+      expanded_path = File.expand_path(path)
+
+      if is_folder == true
+        return Dir.exist?(expanded_path)
+      else
+        return File.exist?(expanded_path)
+      end
+
+      # Handle remote
     end
   end
 end
