@@ -97,16 +97,19 @@ module Sensible
         # end
         if task.packages.length > 0
           if task.do_packages_check
-            Logger.success("Packages installed!")
+            Logger.success("Task packages installed!")
           else
-            Logger.danger("Packages NOT installed!")
+            Logger.danger("Task packages NOT installed!")
           end
         end
-
-        if task.do_check
-          Logger.success("Is installed!")
-        else
-          Logger.danger("Is NOT installed!")
+        
+        # Only do check if script exists
+        if task.script 
+          if task.do_check
+            Logger.success("Task is installed!")
+          else
+            Logger.danger("Task is NOT installed!")
+          end
         end
       end
     end
@@ -139,15 +142,15 @@ module Sensible
         # end
         if task.packages.length > 0
           if task.do_packages_check
-            Logger.success("Packages installed!")
+            Logger.success("Task packages installed!")
           else
             Logger.info("Installing packages...\r", use_print: true)
             if task.do_packages_install
               Logger.clear_line
-              Logger.success("Packages installed!")
+              Logger.success("Task packages installed!")
             else
               Logger.clear_line
-              Logger.danger("Packages NOT installed!")
+              Logger.danger("Task packages NOT installed!")
             end
 
             Logger.flush
@@ -155,20 +158,32 @@ module Sensible
         end
 
         if task.do_check
-          Logger.success("Is installed!")
+          Logger.success("Task is installed!")
         else
-          if task.copy || task.script
+          # Handle copy task
+          if task.copy
+            Logger.info("Copying files...\r", use_print: true)
+            if task.do_copy
+              Logger.clear_line
+              Logger.success("Files was copied!")
+            else
+              Logger.clear_line
+              Logger.danger("Files was NOT copied!")
+            end
+            Logger.flush
+          end
+
+          # Handle task script
+          if task.script
             Logger.info("Running task...\r", use_print: true)
             if task.do_script
               Logger.clear_line
-              Logger.success("Is installed!")
+              Logger.success("Task is installed!")
             else
               Logger.clear_line
-              Logger.danger("Is NOT installed!")
+              Logger.danger("Task is NOT installed!")
             end
             Logger.flush
-          else
-            Logger.danger("Is NOT installed!")
           end
         end
       end
