@@ -102,6 +102,15 @@ module Sensible
             Logger.danger("Task packages NOT installed!")
           end
         end
+
+
+        if task.copy 
+          if task.do_copy_check
+            Logger.success("File(s) already exists!")
+          else
+            Logger.danger("File(s) are missing!")
+          end
+        end
         
         # Only do check if script exists
         if task.script 
@@ -162,16 +171,23 @@ module Sensible
         else
           # Handle copy task
           if task.copy
-            Logger.info("Copying files...\r", use_print: true)
-            if task.do_copy
-              Logger.clear_line
-              Logger.success("Files was copied!")
+            if task.do_copy_check
+              Logger.success("File(s) already exists!")
             else
-              Logger.clear_line
-              Logger.danger("Files was NOT copied!")
+              Logger.info("Copying files...\r", use_print: true)
+
+              if task.do_copy
+                Logger.clear_line
+                Logger.success("Files was copied!")
+              else
+                Logger.clear_line
+                Logger.danger("Files was NOT copied!")
+              end
+              Logger.flush
             end
-            Logger.flush
-          end
+            end
+
+            
 
           # Handle task script
           if task.script

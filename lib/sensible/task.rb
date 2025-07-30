@@ -97,33 +97,30 @@ module Sensible
 
 
     def do_copy 
-      origin = File.expand_path(@copy['origin'])
-        destination = @copy['dest']
-        destination_expanded = File.expand_path(@copy['dest'])
-        
-        puts destination
-
-        commmand = nil
-        
-        if @sensible.opts.host 
-          if @user 
-
-            command = "rsync -avu --delete #{Shellwords.escape(origin)} root@#{@sensible.opts.host}:#{Shellwords.escape(destination.sub('~', "/home/#{user}"))}"
-          else 
-            command = "rsync -avu --delete #{Shellwords.escape(origin)} root@#{@sensible.opts.host}:#{Shellwords.escape(destination)}"
-          end
-          
+      origin = @copy['origin']
+      origin_expanded = File.expand_path(@copy['origin'])
+      destination = @copy['dest']
+      destination_expanded = File.expand_path(@copy['dest'])
+    
+      commmand = nil
+      
+      if @sensible.opts.host 
+        if @user
+          command = "rsync -avu --delete #{Shellwords.escape(origin)} root@#{@sensible.opts.host}:#{Shellwords.escape(destination.sub('~', "/home/#{user}"))}"
         else 
-          command = "rsync -avu --delete #{Shellwords.escape(origin)} #{Shellwords.escape(destination_expanded)}"
+          command = "rsync -avu --delete #{Shellwords.escape(origin)} root@#{@sensible.opts.host}:#{Shellwords.escape(destination)}"
         end
-        
-        if @sensible.opts.verbose 
-          system(command)
-        else 
-          system(command, out: File::NULL, err: File::NULL)
-        end
-        
-        return $?.success?
+      else 
+        command = "rsync -avu --delete #{origin} #{destination}"
+      end
+      
+      if @sensible.opts.verbose 
+        system(command)
+      else 
+        system(command, out: File::NULL, err: File::NULL)
+      end
+      
+      return $?.success?
     end
 
     def do_script
@@ -137,17 +134,17 @@ module Sensible
     end
 
 
-    def check_exists(path)
-      is_folder = path.end_with?('/')
-      expanded_path = File.expand_path(path)
-
-      if is_folder == true
-        return Dir.exist?(expanded_path)
+    def do_copy_check
+      command = "rsync -avcn --delete --itemize-changes #{@copy['origin']} #{@copy['dest']} | grep -e '^>f' -e '^[>c]d' | cut -c13-"
+      output = `#{command}`
+    
+      # If output is empty, it means there was no changes
+      if (output == "")
+        return true
       else
-        return File.exist?(expanded_path)
+        return false
       end
-
-      # Handle remote
+      
     end
   end
 end
