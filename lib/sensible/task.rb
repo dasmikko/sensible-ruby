@@ -92,12 +92,12 @@ module Sensible
 
       # If there is no check, default to false, to force task to script every time
       shell = Shell.new(@sensible)
-      return shell.run_command(@check, @user)
+      return shell.run_command(@check, @user, show_output: @show_output)
     end
 
-    def do_script
-      if @copy != nil
-        origin = File.expand_path(@copy['origin'])
+
+    def do_copy 
+      origin = File.expand_path(@copy['origin'])
         destination = @copy['dest']
         destination_expanded = File.expand_path(@copy['dest'])
         
@@ -123,13 +123,13 @@ module Sensible
           system(command, out: File::NULL, err: File::NULL)
         end
         
-        return $?.success?   
-      end
+        return $?.success?
+    end
 
-
+    def do_script
       # TODO: Handle the show output property!
       shell = Shell.new(@sensible)
-      return shell.run_command(@script, @user)         
+      return shell.run_command(@script, @user, show_output: @show_output)         
     end
 
     def do_verify
